@@ -1,0 +1,804 @@
+2026-09-08 14:38:03,141 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0107s
+2026-09-08 14:39:03,056 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0038s
+2026-09-08 14:43:36,926 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0332s
+2026-09-08 14:43:36,945 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0521s
+2026-09-08 14:43:36,947 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0505s
+2026-09-08 14:43:38,060 - app.main - INFO - POST /auth/login - Status: 401 - Time: 0.2672s
+2026-09-08 14:43:47,999 - app.main - INFO - POST /auth/login - Status: 200 - Time: 0.2515s
+2026-09-08 14:43:48,126 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0031s
+2026-09-08 14:43:48,143 - app.main - INFO - GET /users - Status: 200 - Time: 0.0129s
+2026-09-08 14:43:48,170 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0437s
+2026-09-08 14:43:48,173 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0426s
+2026-09-08 14:43:48,183 - app.main - INFO - GET /users - Status: 200 - Time: 0.0156s
+2026-09-08 14:43:48,191 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0115s
+2026-09-08 14:43:48,208 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0222s
+2026-09-08 14:43:48,225 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0896s
+2026-09-08 14:43:53,318 - app.main - INFO - GET /users - Status: 200 - Time: 0.0053s
+2026-09-08 14:43:53,331 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0183s
+2026-09-08 14:43:53,334 - app.main - INFO - GET /users - Status: 200 - Time: 0.0083s
+2026-09-08 14:43:53,355 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0138s
+2026-09-08 14:44:08,954 - app.main - INFO - POST /auth/login - Status: 200 - Time: 0.2619s
+2026-09-08 14:44:09,061 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0070s
+2026-09-08 14:44:09,063 - app.main - INFO - GET /reports/volunteer/stats - Status: 200 - Time: 0.0103s
+2026-09-08 14:44:09,070 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0123s
+2026-09-08 14:44:09,084 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0051s
+2026-09-08 14:44:09,085 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0054s
+2026-09-08 14:44:09,086 - app.main - INFO - GET /reports/volunteer/stats - Status: 200 - Time: 0.0091s
+2026-09-08 14:44:48,111 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0054s
+2026-09-08 14:45:40,248 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0034s
+2026-09-08 14:45:40,263 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0133s
+2026-09-08 14:45:40,266 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0049s
+2026-09-08 14:45:40,267 - app.main - INFO - GET /users - Status: 403 - Time: 0.0063s
+2026-09-08 14:45:40,275 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0045s
+2026-09-08 14:45:40,279 - app.main - INFO - GET /users - Status: 403 - Time: 0.0022s
+2026-09-08 14:45:40,666 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0040s
+2026-09-08 14:45:40,672 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0065s
+2026-09-08 14:45:40,679 - app.main - INFO - GET /reports/volunteer/stats - Status: 200 - Time: 0.0121s
+2026-09-08 14:45:40,684 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0098s
+2026-09-08 14:45:40,687 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0056s
+2026-09-08 14:45:40,693 - app.main - INFO - GET /reports/volunteer/stats - Status: 200 - Time: 0.0062s
+2026-09-08 14:46:40,626 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0032s
+2026-09-08 14:47:40,623 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0031s
+2026-09-08 14:48:07,470 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0074s
+2026-09-08 14:48:07,473 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0103s
+2026-09-08 14:48:07,476 - app.main - INFO - GET /reports/volunteer/stats - Status: 200 - Time: 0.0110s
+2026-09-08 14:48:07,486 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0051s
+2026-09-08 14:48:07,489 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0077s
+2026-09-08 14:48:07,497 - app.main - INFO - GET /reports/volunteer/stats - Status: 200 - Time: 0.0097s
+2026-09-08 14:48:07,561 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0029s
+2026-09-08 14:48:15,204 - app.main - INFO - POST /auth/login - Status: 200 - Time: 0.2634s
+2026-09-08 14:48:15,325 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0032s
+2026-09-08 14:48:15,339 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0092s
+2026-09-08 14:48:15,340 - app.main - INFO - GET /users - Status: 200 - Time: 0.0079s
+2026-09-08 14:48:15,341 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0072s
+2026-09-08 14:48:15,354 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0110s
+2026-09-08 14:48:15,364 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0114s
+2026-09-08 14:48:15,366 - app.main - INFO - GET /users - Status: 200 - Time: 0.0189s
+2026-09-08 14:48:15,367 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0183s
+2026-09-08 14:48:19,994 - app.main - INFO - GET /users - Status: 200 - Time: 0.0028s
+2026-09-08 14:48:20,003 - app.main - INFO - GET /users - Status: 200 - Time: 0.0031s
+2026-09-08 14:48:21,433 - app.main - INFO - GET /checklist - Status: 200 - Time: 0.0031s
+2026-09-08 14:48:21,447 - app.main - INFO - GET /checklist - Status: 200 - Time: 0.0029s
+2026-09-08 14:48:22,131 - app.main - INFO - GET /users - Status: 200 - Time: 0.0125s
+2026-09-08 14:48:22,140 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0235s
+2026-09-08 14:48:22,151 - app.main - INFO - GET /users - Status: 200 - Time: 0.0051s
+2026-09-08 14:48:22,164 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0086s
+2026-09-08 14:48:33,612 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0044s
+2026-09-08 14:48:33,616 - app.main - INFO - GET /users - Status: 200 - Time: 0.0076s
+2026-09-08 14:48:33,618 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0109s
+2026-09-08 14:48:33,633 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0070s
+2026-09-08 14:48:33,634 - app.main - INFO - GET /users - Status: 200 - Time: 0.0074s
+2026-09-08 14:48:33,636 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0082s
+2026-09-08 14:48:33,650 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0026s
+2026-09-08 14:48:34,080 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0055s
+2026-09-08 14:48:34,082 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0062s
+2026-09-08 14:48:34,093 - app.main - INFO - GET /reports/volunteer/stats - Status: 200 - Time: 0.0150s
+2026-09-08 14:48:34,099 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0070s
+2026-09-08 14:48:34,108 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0106s
+2026-09-08 14:48:34,112 - app.main - INFO - GET /reports/volunteer/stats - Status: 200 - Time: 0.0066s
+2026-09-08 14:48:34,133 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0033s
+2026-09-08 14:48:37,769 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0055s
+2026-09-08 14:48:37,774 - app.main - INFO - GET /users - Status: 200 - Time: 0.0080s
+2026-09-08 14:48:37,778 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0127s
+2026-09-08 14:48:37,785 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0048s
+2026-09-08 14:48:37,792 - app.main - INFO - GET /users - Status: 200 - Time: 0.0042s
+2026-09-08 14:48:37,798 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0106s
+2026-09-08 14:48:47,214 - app.main - INFO - GET /users - Status: 200 - Time: 0.0078s
+2026-09-08 14:48:47,215 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0096s
+2026-09-08 14:48:47,219 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0138s
+2026-09-08 14:48:49,535 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0070s
+2026-09-08 14:48:49,540 - app.main - INFO - GET /users - Status: 200 - Time: 0.0068s
+2026-09-08 14:48:49,541 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0109s
+2026-09-08 14:48:56,296 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0059s
+2026-09-08 14:48:56,297 - app.main - INFO - GET /users - Status: 200 - Time: 0.0071s
+2026-09-08 14:48:56,311 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0048s
+2026-09-08 14:48:56,313 - app.main - INFO - GET /users - Status: 200 - Time: 0.0064s
+2026-09-08 14:49:01,363 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0060s
+2026-09-08 14:49:01,366 - app.main - INFO - GET /users - Status: 200 - Time: 0.0042s
+2026-09-08 14:49:01,380 - app.main - INFO - GET /users - Status: 200 - Time: 0.0052s
+2026-09-08 14:49:01,381 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0097s
+2026-09-08 14:49:02,578 - app.main - INFO - GET /checklist - Status: 200 - Time: 0.0032s
+2026-09-08 14:49:02,605 - app.main - INFO - GET /checklist - Status: 200 - Time: 0.0028s
+2026-09-08 14:49:27,552 - app.main - INFO - GET /users - Status: 200 - Time: 0.0065s
+2026-09-08 14:49:27,562 - app.main - INFO - GET /reports/admin/yearly-stats - Status: 200 - Time: 0.0157s
+2026-09-08 14:49:27,565 - app.main - INFO - GET /users - Status: 200 - Time: 0.0047s
+2026-09-08 14:49:27,576 - app.main - INFO - GET /reports/admin/yearly-stats - Status: 200 - Time: 0.0047s
+2026-09-08 14:49:34,051 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0030s
+2026-09-08 14:49:34,128 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0029s
+2026-09-08 14:49:47,747 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0056s
+2026-09-08 14:49:47,749 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0078s
+2026-09-08 14:49:47,750 - app.main - INFO - GET /reports/volunteer/stats - Status: 200 - Time: 0.0072s
+2026-09-08 14:49:47,759 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0061s
+2026-09-08 14:49:47,761 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0077s
+2026-09-08 14:49:47,764 - app.main - INFO - GET /reports/volunteer/stats - Status: 200 - Time: 0.0072s
+2026-09-08 14:49:47,795 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0031s
+2026-09-08 14:49:48,055 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0042s
+2026-09-08 14:49:48,058 - app.main - INFO - GET /users - Status: 200 - Time: 0.0066s
+2026-09-08 14:49:48,061 - app.main - INFO - GET /reports/admin/yearly-stats - Status: 200 - Time: 0.0064s
+2026-09-08 14:49:48,083 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0164s
+2026-09-08 14:49:48,085 - app.main - INFO - GET /users - Status: 200 - Time: 0.0058s
+2026-09-08 14:49:48,094 - app.main - INFO - GET /reports/admin/yearly-stats - Status: 200 - Time: 0.0128s
+2026-09-08 14:49:48,095 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0056s
+2026-09-08 14:50:47,855 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0076s
+2026-09-08 14:50:49,064 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0038s
+2026-09-08 14:51:47,817 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0065s
+2026-09-08 14:51:49,051 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0035s
+2026-09-08 14:52:39,440 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0463s
+2026-09-08 14:52:39,451 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0043s
+2026-09-08 14:52:39,462 - app.main - INFO - GET /users - Status: 200 - Time: 0.0628s
+2026-09-08 14:52:39,475 - app.main - INFO - GET /users - Status: 200 - Time: 0.0063s
+2026-09-08 14:52:39,477 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0782s
+2026-09-08 14:52:39,496 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0125s
+2026-09-08 14:52:41,636 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0052s
+2026-09-08 14:52:41,639 - app.main - INFO - GET /users - Status: 200 - Time: 0.0063s
+2026-09-08 14:52:41,653 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0083s
+2026-09-08 14:52:41,656 - app.main - INFO - GET /users - Status: 200 - Time: 0.0040s
+2026-09-08 14:52:43,040 - app.main - INFO - GET /users - Status: 200 - Time: 0.0128s
+2026-09-08 14:52:43,042 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0156s
+2026-09-08 14:52:43,043 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0169s
+2026-09-08 14:52:43,053 - app.main - INFO - GET /users - Status: 200 - Time: 0.0047s
+2026-09-08 14:52:43,059 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0071s
+2026-09-08 14:52:43,061 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0100s
+2026-09-08 14:52:45,380 - app.main - INFO - GET /users - Status: 200 - Time: 0.0042s
+2026-09-08 14:52:45,384 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0101s
+2026-09-08 14:52:45,395 - app.main - INFO - GET /users - Status: 200 - Time: 0.0061s
+2026-09-08 14:52:45,399 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0068s
+2026-09-08 14:52:45,919 - app.main - INFO - GET /checklist - Status: 200 - Time: 0.0057s
+2026-09-08 14:52:45,947 - app.main - INFO - GET /checklist - Status: 200 - Time: 0.0034s
+2026-09-08 14:52:46,616 - app.main - INFO - GET /users - Status: 200 - Time: 0.0042s
+2026-09-08 14:52:46,617 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0064s
+2026-09-08 14:52:46,640 - app.main - INFO - GET /users - Status: 200 - Time: 0.0047s
+2026-09-08 14:52:46,642 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0059s
+2026-09-08 14:52:47,811 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0089s
+2026-09-08 14:52:49,050 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0042s
+2026-09-08 14:52:50,265 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0062s
+2026-09-08 14:52:50,269 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0087s
+2026-09-08 14:52:50,270 - app.main - INFO - GET /users - Status: 200 - Time: 0.0079s
+2026-09-08 14:52:50,283 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0084s
+2026-09-08 14:52:50,289 - app.main - INFO - GET /users - Status: 200 - Time: 0.0049s
+2026-09-08 14:52:50,291 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0091s
+2026-09-08 14:52:51,291 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0051s
+2026-09-08 14:52:51,293 - app.main - INFO - GET /users - Status: 200 - Time: 0.0069s
+2026-09-08 14:52:51,307 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0051s
+2026-09-08 14:52:51,309 - app.main - INFO - GET /users - Status: 200 - Time: 0.0066s
+2026-09-08 14:52:53,999 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0053s
+2026-09-08 14:52:54,008 - app.main - INFO - GET /users - Status: 200 - Time: 0.0052s
+2026-09-08 14:52:54,010 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0115s
+2026-09-08 14:52:54,023 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0113s
+2026-09-08 14:52:54,026 - app.main - INFO - GET /users - Status: 200 - Time: 0.0090s
+2026-09-08 14:52:54,030 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0124s
+2026-09-08 14:52:55,750 - app.main - INFO - GET /users - Status: 200 - Time: 0.0060s
+2026-09-08 14:52:55,773 - app.main - INFO - GET /users - Status: 200 - Time: 0.0060s
+2026-09-08 14:52:55,777 - app.main - INFO - GET /reports/admin/yearly-stats - Status: 200 - Time: 0.0095s
+2026-09-08 14:52:55,795 - app.main - INFO - GET /reports/admin/yearly-stats - Status: 200 - Time: 0.0073s
+2026-09-08 14:52:57,107 - app.main - INFO - GET /checklist - Status: 200 - Time: 0.0024s
+2026-09-08 14:52:57,117 - app.main - INFO - GET /checklist - Status: 200 - Time: 0.0030s
+2026-09-08 14:53:00,140 - app.main - INFO - GET /users - Status: 200 - Time: 0.0083s
+2026-09-08 14:53:00,145 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0146s
+2026-09-08 14:53:00,156 - app.main - INFO - GET /users - Status: 200 - Time: 0.0050s
+2026-09-08 14:53:00,164 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0085s
+2026-09-08 14:53:00,916 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0050s
+2026-09-08 14:53:00,917 - app.main - INFO - GET /users - Status: 200 - Time: 0.0053s
+2026-09-08 14:53:00,933 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0072s
+2026-09-08 14:53:00,934 - app.main - INFO - GET /users - Status: 200 - Time: 0.0056s
+2026-09-08 14:53:02,741 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0064s
+2026-09-08 14:53:02,744 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0085s
+2026-09-08 14:53:02,753 - app.main - INFO - GET /users - Status: 200 - Time: 0.0152s
+2026-09-08 14:53:02,760 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0041s
+2026-09-08 14:53:02,773 - app.main - INFO - GET /users - Status: 200 - Time: 0.0048s
+2026-09-08 14:53:02,775 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0110s
+2026-09-08 14:53:07,219 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0047s
+2026-09-08 14:53:07,220 - app.main - INFO - GET /users - Status: 200 - Time: 0.0049s
+2026-09-08 14:53:07,232 - app.main - INFO - GET /users - Status: 200 - Time: 0.0051s
+2026-09-08 14:53:07,233 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0055s
+2026-09-08 14:53:09,075 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0076s
+2026-09-08 14:53:09,085 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0174s
+2026-09-08 14:53:09,107 - app.main - INFO - GET /users - Status: 200 - Time: 0.0335s
+2026-09-08 14:53:09,114 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0102s
+2026-09-08 14:53:09,129 - app.main - INFO - GET /users - Status: 200 - Time: 0.0060s
+2026-09-08 14:53:09,131 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0077s
+2026-09-08 14:53:10,259 - app.main - INFO - GET /users - Status: 200 - Time: 0.0111s
+2026-09-08 14:53:10,263 - app.main - INFO - GET /reports/admin/yearly-stats - Status: 200 - Time: 0.0156s
+2026-09-08 14:53:10,281 - app.main - INFO - GET /users - Status: 200 - Time: 0.0058s
+2026-09-08 14:53:10,300 - app.main - INFO - GET /reports/admin/yearly-stats - Status: 200 - Time: 0.0117s
+2026-09-08 14:53:13,680 - app.main - INFO - GET /users - Status: 200 - Time: 0.0080s
+2026-09-08 14:53:13,682 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0075s
+2026-09-08 14:53:13,700 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0218s
+2026-09-08 14:53:13,704 - app.main - INFO - GET /users - Status: 200 - Time: 0.0109s
+2026-09-08 14:53:13,714 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0151s
+2026-09-08 14:53:13,730 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0061s
+2026-09-08 14:53:17,863 - app.main - INFO - GET /users - Status: 200 - Time: 0.0113s
+2026-09-08 14:53:17,875 - app.main - INFO - GET /reports/admin/yearly-stats - Status: 200 - Time: 0.0224s
+2026-09-08 14:53:17,882 - app.main - INFO - GET /users - Status: 200 - Time: 0.0041s
+2026-09-08 14:53:17,898 - app.main - INFO - GET /reports/admin/yearly-stats - Status: 200 - Time: 0.0093s
+2026-09-08 14:53:32,448 - app.main - INFO - GET /checklist - Status: 200 - Time: 0.0020s
+2026-09-08 14:53:32,472 - app.main - INFO - GET /checklist - Status: 200 - Time: 0.0025s
+2026-09-08 14:53:33,256 - app.main - INFO - GET /users - Status: 200 - Time: 0.0047s
+2026-09-08 14:53:33,260 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0098s
+2026-09-08 14:53:33,274 - app.main - INFO - GET /users - Status: 200 - Time: 0.0049s
+2026-09-08 14:53:33,277 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0078s
+2026-09-08 14:53:39,342 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0048s
+2026-09-08 14:53:39,345 - app.main - INFO - GET /users - Status: 200 - Time: 0.0060s
+2026-09-08 14:53:39,356 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0051s
+2026-09-08 14:53:39,359 - app.main - INFO - GET /users - Status: 200 - Time: 0.0050s
+2026-09-08 14:53:47,583 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0054s
+2026-09-08 14:53:47,589 - app.main - INFO - GET /users - Status: 200 - Time: 0.0071s
+2026-09-08 14:53:47,601 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0140s
+2026-09-08 14:53:47,621 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0078s
+2026-09-08 14:53:47,623 - app.main - INFO - GET /users - Status: 200 - Time: 0.0085s
+2026-09-08 14:53:47,626 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0123s
+2026-09-08 14:53:47,806 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0031s
+2026-09-08 14:53:49,039 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0027s
+2026-09-08 14:53:50,772 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0067s
+2026-09-08 14:53:50,773 - app.main - INFO - GET /users - Status: 200 - Time: 0.0081s
+2026-09-08 14:53:50,816 - app.main - INFO - GET /users - Status: 200 - Time: 0.0049s
+2026-09-08 14:53:50,817 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0061s
+2026-09-08 14:53:54,149 - app.main - INFO - GET /checklist - Status: 200 - Time: 0.0054s
+2026-09-08 14:53:54,167 - app.main - INFO - GET /checklist - Status: 200 - Time: 0.0053s
+2026-09-08 14:53:55,573 - app.main - INFO - GET /users - Status: 200 - Time: 0.0044s
+2026-09-08 14:53:55,586 - app.main - INFO - GET /reports/admin/yearly-stats - Status: 200 - Time: 0.0155s
+2026-09-08 14:53:55,590 - app.main - INFO - GET /users - Status: 200 - Time: 0.0057s
+2026-09-08 14:53:55,606 - app.main - INFO - GET /reports/admin/yearly-stats - Status: 200 - Time: 0.0105s
+2026-09-08 14:54:08,022 - app.main - INFO - GET /reports/admin/volunteer/554b4f0f-0840-4974-ac67-2a5ad8f4a427/pdf - Status: 200 - Time: 0.0139s
+2026-09-08 14:54:43,594 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0074s
+2026-09-08 14:54:43,598 - app.main - INFO - GET /users - Status: 200 - Time: 0.0094s
+2026-09-08 14:54:43,600 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0126s
+2026-09-08 14:54:43,608 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0063s
+2026-09-08 14:54:43,612 - app.main - INFO - GET /users - Status: 200 - Time: 0.0089s
+2026-09-08 14:54:43,618 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0126s
+2026-09-08 14:54:47,352 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0051s
+2026-09-08 14:54:47,364 - app.main - INFO - GET /users - Status: 200 - Time: 0.0141s
+2026-09-08 14:54:47,393 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0054s
+2026-09-08 14:54:47,396 - app.main - INFO - GET /users - Status: 200 - Time: 0.0078s
+2026-09-08 14:54:48,088 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0053s
+2026-09-08 14:55:11,608 - app.main - INFO - POST /auth/login - Status: 200 - Time: 0.2638s
+2026-09-08 14:55:11,820 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0353s
+2026-09-08 14:55:11,832 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0049s
+2026-09-08 14:55:11,851 - app.main - INFO - GET /reports/volunteer/stats - Status: 200 - Time: 0.0662s
+2026-09-08 14:55:11,852 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0670s
+2026-09-08 14:55:11,864 - app.main - INFO - GET /reports/volunteer/stats - Status: 200 - Time: 0.0045s
+2026-09-08 14:55:11,871 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0119s
+2026-09-08 14:55:21,488 - app.main - INFO - GET /checklist - Status: 200 - Time: 0.0036s
+2026-09-08 14:55:21,498 - app.main - INFO - GET /checklist - Status: 200 - Time: 0.0027s
+2026-09-08 14:55:22,406 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0050s
+2026-09-08 14:55:22,412 - app.main - INFO - GET /reports/volunteer/stats - Status: 200 - Time: 0.0099s
+2026-09-08 14:55:22,436 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0188s
+2026-09-08 14:55:22,445 - app.main - INFO - GET /reports/volunteer/stats - Status: 200 - Time: 0.0039s
+2026-09-08 14:55:41,619 - app.main - INFO - POST /shifts/assign - Status: 200 - Time: 0.0318s
+2026-09-08 14:55:41,644 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0049s
+2026-09-08 14:55:41,645 - app.main - INFO - GET /reports/volunteer/stats - Status: 200 - Time: 0.0062s
+2026-09-08 14:55:49,052 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0098s
+2026-09-08 14:55:49,194 - app.main - INFO - POST /shifts/clock-in - Status: 200 - Time: 0.0190s
+2026-09-08 14:55:49,213 - app.main - INFO - GET /reports/volunteer/stats - Status: 200 - Time: 0.0043s
+2026-09-08 14:55:49,214 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0070s
+2026-09-08 14:55:49,855 - app.main - INFO - POST /shifts/clock-out - Status: 200 - Time: 0.0205s
+2026-09-08 14:55:49,909 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0053s
+2026-09-08 14:55:49,910 - app.main - INFO - GET /reports/volunteer/stats - Status: 200 - Time: 0.0055s
+2026-09-08 14:55:52,847 - app.main - INFO - GET /reports/volunteer/attendance - Status: 200 - Time: 0.0049s
+2026-09-08 14:56:02,535 - app.main - INFO - GET /reports/volunteer/pdf - Status: 200 - Time: 0.0096s
+2026-09-08 14:56:11,764 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0092s
+2026-09-08 14:56:43,414 - app.main - INFO - PUT /notifications/read-all - Status: 200 - Time: 0.0117s
+2026-09-08 14:56:43,427 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0031s
+2026-09-08 14:57:04,045 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0031s
+2026-09-08 14:57:11,740 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0084s
+2026-09-08 14:57:41,774 - app.main - INFO - DELETE /shifts/assign/bbc8a0b1-c614-4fd8-bfce-dd87f9eeccdf - Status: 200 - Time: 0.0332s
+2026-09-08 14:57:41,817 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0242s
+2026-09-08 14:57:41,843 - app.main - INFO - GET /reports/volunteer/stats - Status: 200 - Time: 0.0502s
+2026-09-08 14:58:04,064 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0071s
+2026-09-08 14:58:11,733 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0044s
+2026-09-08 14:58:32,926 - app.main - INFO - PUT /notifications/read-all - Status: 200 - Time: 0.0128s
+2026-09-08 14:58:32,940 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0034s
+2026-09-08 14:58:42,092 - app.main - INFO - PUT /notifications/read-all - Status: 200 - Time: 0.0043s
+2026-09-08 14:58:42,104 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0034s
+2026-09-08 14:58:48,094 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0051s
+2026-09-08 14:58:56,324 - app.main - INFO - GET /reports/admin/stats - Status: 403 - Time: 0.0055s
+2026-09-08 14:58:56,327 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0085s
+2026-09-08 14:58:56,350 - app.main - INFO - GET /reports/admin/stats - Status: 403 - Time: 0.0053s
+2026-09-08 14:58:56,351 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0067s
+2026-09-08 14:58:56,366 - app.main - INFO - GET /users - Status: 403 - Time: 0.0460s
+2026-09-08 14:58:56,374 - app.main - INFO - GET /users - Status: 403 - Time: 0.0019s
+2026-09-08 14:58:58,206 - app.main - INFO - GET /users - Status: 403 - Time: 0.0033s
+2026-09-08 14:58:58,208 - app.main - INFO - GET /reports/admin/stats - Status: 403 - Time: 0.0053s
+2026-09-08 14:58:58,215 - app.main - INFO - GET /users - Status: 403 - Time: 0.0023s
+2026-09-08 14:58:58,221 - app.main - INFO - GET /reports/admin/stats - Status: 403 - Time: 0.0042s
+2026-09-08 14:59:12,068 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0051s
+2026-09-08 14:59:13,462 - app.main - INFO - GET /checklist - Status: 200 - Time: 0.0042s
+2026-09-08 14:59:13,478 - app.main - INFO - GET /checklist - Status: 200 - Time: 0.0049s
+2026-09-08 14:59:14,638 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0067s
+2026-09-08 14:59:14,641 - app.main - INFO - GET /users - Status: 403 - Time: 0.0074s
+2026-09-08 14:59:14,655 - app.main - INFO - GET /users - Status: 403 - Time: 0.0030s
+2026-09-08 14:59:14,666 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0141s
+2026-09-08 14:59:15,936 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0100s
+2026-09-08 14:59:15,941 - app.main - INFO - GET /reports/admin/stats - Status: 403 - Time: 0.0122s
+2026-09-08 14:59:15,943 - app.main - INFO - GET /users - Status: 403 - Time: 0.0102s
+2026-09-08 14:59:15,967 - app.main - INFO - GET /reports/admin/stats - Status: 403 - Time: 0.0063s
+2026-09-08 14:59:15,969 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0082s
+2026-09-08 14:59:15,970 - app.main - INFO - GET /users - Status: 403 - Time: 0.0072s
+2026-09-08 14:59:20,184 - app.main - INFO - GET /reports/admin/yearly-stats - Status: 403 - Time: 0.0028s
+2026-09-08 14:59:20,185 - app.main - INFO - GET /users - Status: 403 - Time: 0.0052s
+2026-09-08 14:59:20,203 - app.main - INFO - GET /users - Status: 403 - Time: 0.0019s
+2026-09-08 14:59:20,217 - app.main - INFO - GET /reports/admin/yearly-stats - Status: 403 - Time: 0.0022s
+2026-09-08 14:59:29,665 - app.main - INFO - POST /auth/login - Status: 200 - Time: 0.2660s
+2026-09-08 14:59:29,751 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0030s
+2026-09-08 14:59:29,769 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0110s
+2026-09-08 14:59:29,772 - app.main - INFO - GET /users - Status: 200 - Time: 0.0125s
+2026-09-08 14:59:29,792 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0335s
+2026-09-08 14:59:29,797 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0073s
+2026-09-08 14:59:29,801 - app.main - INFO - GET /users - Status: 200 - Time: 0.0071s
+2026-09-08 14:59:29,807 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0072s
+2026-09-08 14:59:29,818 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0532s
+2026-09-08 14:59:32,542 - app.main - INFO - GET /users - Status: 200 - Time: 0.0055s
+2026-09-08 14:59:32,544 - app.main - INFO - GET /reports/admin/yearly-stats - Status: 200 - Time: 0.0071s
+2026-09-08 14:59:32,556 - app.main - INFO - GET /users - Status: 200 - Time: 0.0041s
+2026-09-08 14:59:32,572 - app.main - INFO - GET /reports/admin/yearly-stats - Status: 200 - Time: 0.0167s
+2026-09-08 14:59:38,877 - app.main - ERROR - Request error: DELETE /users/4e47cab3-0438-403e-8057-5fbaa6ffe64d/hard - (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.ForeignKeyViolationError'>: update or delete on table "users" violates foreign key constraint "notifications_user_id_fkey" on table "notifications"
+DETAIL:  Key (id)=(4e47cab3-0438-403e-8057-5fbaa6ffe64d) is still referenced from table "notifications".
+[SQL: DELETE FROM users WHERE users.id = $1::VARCHAR]
+[parameters: ('4e47cab3-0438-403e-8057-5fbaa6ffe64d',)]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 545, in _prepare_and_execute
+    self._rows = deque(await prepared_stmt.fetch(*parameters))
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/asyncpg/prepared_stmt.py", line 176, in fetch
+    data = await self.__bind_execute(args, 0, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/asyncpg/prepared_stmt.py", line 267, in __bind_execute
+    data, status, _ = await self.__do_execute(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/asyncpg/prepared_stmt.py", line 256, in __do_execute
+    return await executor(protocol)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "asyncpg/protocol/protocol.pyx", line 206, in bind_execute
+asyncpg.exceptions.ForeignKeyViolationError: update or delete on table "users" violates foreign key constraint "notifications_user_id_fkey" on table "notifications"
+DETAIL:  Key (id)=(4e47cab3-0438-403e-8057-5fbaa6ffe64d) is still referenced from table "notifications".
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1964, in _exec_single_context
+    self.dialect.do_execute(
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/default.py", line 945, in do_execute
+    cursor.execute(statement, parameters)
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 580, in execute
+    self._adapt_connection.await_(
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 132, in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 196, in greenlet_spawn
+    value = await result
+            ^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 558, in _prepare_and_execute
+    self._handle_exception(error)
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 508, in _handle_exception
+    self._adapt_connection._handle_exception(error)
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 792, in _handle_exception
+    raise translated_error from error
+sqlalchemy.dialects.postgresql.asyncpg.AsyncAdapt_asyncpg_dbapi.IntegrityError: <class 'asyncpg.exceptions.ForeignKeyViolationError'>: update or delete on table "users" violates foreign key constraint "notifications_user_id_fkey" on table "notifications"
+DETAIL:  Key (id)=(4e47cab3-0438-403e-8057-5fbaa6ffe64d) is still referenced from table "notifications".
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/app/app/main.py", line 76, in log_requests
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/base.py", line 156, in call_next
+    raise app_exc
+  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/base.py", line 141, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/base.py", line 176, in __call__
+    with recv_stream, send_stream, collapse_excgroups():
+  File "/usr/local/lib/python3.11/contextlib.py", line 158, in __exit__
+    self.gen.throw(typ, value, traceback)
+  File "/usr/local/lib/python3.11/site-packages/starlette/_utils.py", line 82, in collapse_excgroups
+    raise exc
+  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/base.py", line 178, in __call__
+    response = await self.dispatch_func(request, call_next)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app/db/audit_logger.py", line 17, in dispatch
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/base.py", line 156, in call_next
+    raise app_exc
+  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/base.py", line 141, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/fastapi/routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/fastapi/routing.py", line 212, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app/api/users.py", line 33, in hard_delete_user_route
+    return await hard_delete_user(db, user_id, requester)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app/services/user_service.py", line 101, in hard_delete_user
+    await db.commit()
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/ext/asyncio/session.py", line 1015, in commit
+    await greenlet_spawn(self.sync_session.commit)
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 203, in greenlet_spawn
+    result = context.switch(value)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2032, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/state_changes.py", line 139, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 1313, in commit
+    self._prepare_impl()
+  File "<string>", line 2, in _prepare_impl
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/state_changes.py", line 139, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 1288, in _prepare_impl
+    self.session.flush()
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 4353, in flush
+    self._flush(objects)
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 4488, in _flush
+    with util.safe_reraise():
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/util/langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 4449, in _flush
+    flush_context.execute()
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/unitofwork.py", line 466, in execute
+    rec.execute(self)
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/unitofwork.py", line 679, in execute
+    util.preloaded.orm_persistence.delete_obj(
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/persistence.py", line 193, in delete_obj
+    _emit_delete_statements(
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/persistence.py", line 1465, in _emit_delete_statements
+    c = connection.execute(
+        ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1416, in execute
+    return meth(
+           ^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/sql/elements.py", line 523, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1638, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1843, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1983, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 2352, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1964, in _exec_single_context
+    self.dialect.do_execute(
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/default.py", line 945, in do_execute
+    cursor.execute(statement, parameters)
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 580, in execute
+    self._adapt_connection.await_(
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 132, in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 196, in greenlet_spawn
+    value = await result
+            ^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 558, in _prepare_and_execute
+    self._handle_exception(error)
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 508, in _handle_exception
+    self._adapt_connection._handle_exception(error)
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 792, in _handle_exception
+    raise translated_error from error
+sqlalchemy.exc.IntegrityError: (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.ForeignKeyViolationError'>: update or delete on table "users" violates foreign key constraint "notifications_user_id_fkey" on table "notifications"
+DETAIL:  Key (id)=(4e47cab3-0438-403e-8057-5fbaa6ffe64d) is still referenced from table "notifications".
+[SQL: DELETE FROM users WHERE users.id = $1::VARCHAR]
+[parameters: ('4e47cab3-0438-403e-8057-5fbaa6ffe64d',)]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-09-08 14:59:38,944 - app.main - INFO - DELETE /users/4e47cab3-0438-403e-8057-5fbaa6ffe64d/hard - Status: 500 - Time: 0.0827s
+2026-09-08 14:59:53,395 - app.main - INFO - POST /auth/login - Status: 200 - Time: 0.3111s
+2026-09-08 14:59:53,489 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0081s
+2026-09-08 14:59:53,491 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0087s
+2026-09-08 14:59:53,502 - app.main - INFO - GET /users - Status: 200 - Time: 0.0187s
+2026-09-08 14:59:53,506 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0247s
+2026-09-08 14:59:53,508 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0079s
+2026-09-08 14:59:53,511 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0100s
+2026-09-08 14:59:53,516 - app.main - INFO - GET /users - Status: 200 - Time: 0.0063s
+2026-09-08 14:59:53,523 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0088s
+2026-09-08 14:59:55,408 - app.main - INFO - GET /users - Status: 200 - Time: 0.0057s
+2026-09-08 14:59:55,411 - app.main - INFO - GET /reports/admin/yearly-stats - Status: 200 - Time: 0.0085s
+2026-09-08 14:59:55,421 - app.main - INFO - GET /users - Status: 200 - Time: 0.0046s
+2026-09-08 14:59:55,424 - app.main - INFO - GET /reports/admin/yearly-stats - Status: 200 - Time: 0.0058s
+2026-09-08 15:00:00,919 - app.main - ERROR - Request error: DELETE /users/4e47cab3-0438-403e-8057-5fbaa6ffe64d/hard - (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.ForeignKeyViolationError'>: update or delete on table "users" violates foreign key constraint "notifications_user_id_fkey" on table "notifications"
+DETAIL:  Key (id)=(4e47cab3-0438-403e-8057-5fbaa6ffe64d) is still referenced from table "notifications".
+[SQL: DELETE FROM users WHERE users.id = $1::VARCHAR]
+[parameters: ('4e47cab3-0438-403e-8057-5fbaa6ffe64d',)]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 545, in _prepare_and_execute
+    self._rows = deque(await prepared_stmt.fetch(*parameters))
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/asyncpg/prepared_stmt.py", line 176, in fetch
+    data = await self.__bind_execute(args, 0, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/asyncpg/prepared_stmt.py", line 267, in __bind_execute
+    data, status, _ = await self.__do_execute(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/asyncpg/prepared_stmt.py", line 256, in __do_execute
+    return await executor(protocol)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "asyncpg/protocol/protocol.pyx", line 206, in bind_execute
+asyncpg.exceptions.ForeignKeyViolationError: update or delete on table "users" violates foreign key constraint "notifications_user_id_fkey" on table "notifications"
+DETAIL:  Key (id)=(4e47cab3-0438-403e-8057-5fbaa6ffe64d) is still referenced from table "notifications".
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1964, in _exec_single_context
+    self.dialect.do_execute(
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/default.py", line 945, in do_execute
+    cursor.execute(statement, parameters)
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 580, in execute
+    self._adapt_connection.await_(
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 132, in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 196, in greenlet_spawn
+    value = await result
+            ^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 558, in _prepare_and_execute
+    self._handle_exception(error)
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 508, in _handle_exception
+    self._adapt_connection._handle_exception(error)
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 792, in _handle_exception
+    raise translated_error from error
+sqlalchemy.dialects.postgresql.asyncpg.AsyncAdapt_asyncpg_dbapi.IntegrityError: <class 'asyncpg.exceptions.ForeignKeyViolationError'>: update or delete on table "users" violates foreign key constraint "notifications_user_id_fkey" on table "notifications"
+DETAIL:  Key (id)=(4e47cab3-0438-403e-8057-5fbaa6ffe64d) is still referenced from table "notifications".
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/app/app/main.py", line 76, in log_requests
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/base.py", line 156, in call_next
+    raise app_exc
+  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/base.py", line 141, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/base.py", line 176, in __call__
+    with recv_stream, send_stream, collapse_excgroups():
+  File "/usr/local/lib/python3.11/contextlib.py", line 158, in __exit__
+    self.gen.throw(typ, value, traceback)
+  File "/usr/local/lib/python3.11/site-packages/starlette/_utils.py", line 82, in collapse_excgroups
+    raise exc
+  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/base.py", line 178, in __call__
+    response = await self.dispatch_func(request, call_next)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app/db/audit_logger.py", line 17, in dispatch
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/base.py", line 156, in call_next
+    raise app_exc
+  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/base.py", line 141, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/fastapi/routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/fastapi/routing.py", line 212, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app/api/users.py", line 33, in hard_delete_user_route
+    return await hard_delete_user(db, user_id, requester)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/app/services/user_service.py", line 101, in hard_delete_user
+    await db.commit()
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/ext/asyncio/session.py", line 1015, in commit
+    await greenlet_spawn(self.sync_session.commit)
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 203, in greenlet_spawn
+    result = context.switch(value)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2032, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/state_changes.py", line 139, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 1313, in commit
+    self._prepare_impl()
+  File "<string>", line 2, in _prepare_impl
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/state_changes.py", line 139, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 1288, in _prepare_impl
+    self.session.flush()
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 4353, in flush
+    self._flush(objects)
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 4488, in _flush
+    with util.safe_reraise():
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/util/langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 4449, in _flush
+    flush_context.execute()
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/unitofwork.py", line 466, in execute
+    rec.execute(self)
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/unitofwork.py", line 679, in execute
+    util.preloaded.orm_persistence.delete_obj(
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/persistence.py", line 193, in delete_obj
+    _emit_delete_statements(
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/persistence.py", line 1465, in _emit_delete_statements
+    c = connection.execute(
+        ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1416, in execute
+    return meth(
+           ^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/sql/elements.py", line 523, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1638, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1843, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1983, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 2352, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1964, in _exec_single_context
+    self.dialect.do_execute(
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/default.py", line 945, in do_execute
+    cursor.execute(statement, parameters)
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 580, in execute
+    self._adapt_connection.await_(
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 132, in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 196, in greenlet_spawn
+    value = await result
+            ^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 558, in _prepare_and_execute
+    self._handle_exception(error)
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 508, in _handle_exception
+    self._adapt_connection._handle_exception(error)
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 792, in _handle_exception
+    raise translated_error from error
+sqlalchemy.exc.IntegrityError: (sqlalchemy.dialects.postgresql.asyncpg.IntegrityError) <class 'asyncpg.exceptions.ForeignKeyViolationError'>: update or delete on table "users" violates foreign key constraint "notifications_user_id_fkey" on table "notifications"
+DETAIL:  Key (id)=(4e47cab3-0438-403e-8057-5fbaa6ffe64d) is still referenced from table "notifications".
+[SQL: DELETE FROM users WHERE users.id = $1::VARCHAR]
+[parameters: ('4e47cab3-0438-403e-8057-5fbaa6ffe64d',)]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-09-08 15:00:00,936 - app.main - INFO - DELETE /users/4e47cab3-0438-403e-8057-5fbaa6ffe64d/hard - Status: 500 - Time: 0.0244s
+2026-09-08 15:00:09,153 - app.main - INFO - DELETE /users/4e47cab3-0438-403e-8057-5fbaa6ffe64d - Status: 200 - Time: 0.0137s
+2026-09-08 15:00:09,170 - app.main - INFO - GET /users - Status: 200 - Time: 0.0046s
+2026-09-08 15:00:09,175 - app.main - INFO - GET /reports/admin/yearly-stats - Status: 200 - Time: 0.0085s
+2026-09-08 15:00:12,058 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0133s
+2026-09-08 15:00:23,345 - app.main - INFO - GET /users - Status: 200 - Time: 0.0158s
+2026-09-08 15:00:23,352 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0243s
+2026-09-08 15:00:23,355 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0277s
+2026-09-08 15:00:23,374 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0072s
+2026-09-08 15:00:23,375 - app.main - INFO - GET /users - Status: 200 - Time: 0.0089s
+2026-09-08 15:00:23,383 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0149s
+2026-09-08 15:00:26,411 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0048s
+2026-09-08 15:00:26,412 - app.main - INFO - GET /users - Status: 200 - Time: 0.0065s
+2026-09-08 15:00:26,426 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0052s
+2026-09-08 15:00:26,427 - app.main - INFO - GET /users - Status: 200 - Time: 0.0053s
+2026-09-08 15:00:45,445 - app.main - INFO - GET /users - Status: 200 - Time: 0.0065s
+2026-09-08 15:00:45,448 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0087s
+2026-09-08 15:00:45,460 - app.main - INFO - GET /users - Status: 200 - Time: 0.0056s
+2026-09-08 15:00:45,462 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0068s
+2026-09-08 15:00:53,481 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0084s
+2026-09-08 15:01:03,559 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0073s
+2026-09-08 15:01:03,561 - app.main - INFO - GET /users - Status: 200 - Time: 0.0097s
+2026-09-08 15:01:03,579 - app.main - INFO - GET /users - Status: 200 - Time: 0.0088s
+2026-09-08 15:01:03,582 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0092s
+2026-09-08 15:01:05,485 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0050s
+2026-09-08 15:01:05,502 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0077s
+2026-09-08 15:01:05,507 - app.main - INFO - GET /users - Status: 200 - Time: 0.0134s
+2026-09-08 15:01:05,508 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0149s
+2026-09-08 15:01:05,517 - app.main - INFO - GET /users - Status: 200 - Time: 0.0040s
+2026-09-08 15:01:05,522 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0074s
+2026-09-08 15:01:08,122 - app.main - INFO - GET /users - Status: 200 - Time: 0.0046s
+2026-09-08 15:01:08,124 - app.main - INFO - GET /reports/admin/yearly-stats - Status: 200 - Time: 0.0059s
+2026-09-08 15:01:08,135 - app.main - INFO - GET /users - Status: 200 - Time: 0.0047s
+2026-09-08 15:01:08,138 - app.main - INFO - GET /reports/admin/yearly-stats - Status: 200 - Time: 0.0062s
+2026-09-08 15:01:12,050 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0053s
+2026-09-08 15:01:15,261 - app.main - INFO - GET /reports/admin/volunteer/554b4f0f-0840-4974-ac67-2a5ad8f4a427/pdf - Status: 200 - Time: 0.0119s
+2026-09-08 15:01:45,199 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0057s
+2026-09-08 15:01:45,219 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0069s
+2026-09-08 15:01:45,220 - app.main - INFO - GET /users - Status: 200 - Time: 0.0094s
+2026-09-08 15:01:45,222 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0107s
+2026-09-08 15:01:45,233 - app.main - INFO - GET /users - Status: 200 - Time: 0.0059s
+2026-09-08 15:01:45,236 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0066s
+2026-09-08 15:01:52,297 - app.main - INFO - GET /users - Status: 200 - Time: 0.0046s
+2026-09-08 15:01:52,302 - app.main - INFO - GET /reports/admin/yearly-stats - Status: 200 - Time: 0.0079s
+2026-09-08 15:01:52,310 - app.main - INFO - GET /users - Status: 200 - Time: 0.0032s
+2026-09-08 15:01:52,317 - app.main - INFO - GET /reports/admin/yearly-stats - Status: 200 - Time: 0.0044s
+2026-09-08 15:01:52,868 - app.main - INFO - GET /checklist - Status: 200 - Time: 0.0026s
+2026-09-08 15:01:52,876 - app.main - INFO - GET /checklist - Status: 200 - Time: 0.0018s
+2026-09-08 15:01:53,505 - app.main - INFO - GET /users - Status: 200 - Time: 0.0068s
+2026-09-08 15:01:53,507 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0087s
+2026-09-08 15:01:53,518 - app.main - INFO - GET /users - Status: 200 - Time: 0.0044s
+2026-09-08 15:01:53,524 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0077s
+2026-09-08 15:01:53,539 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0025s
+2026-09-08 15:01:54,376 - app.main - INFO - GET /users - Status: 200 - Time: 0.0037s
+2026-09-08 15:01:54,380 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0054s
+2026-09-08 15:01:54,386 - app.main - INFO - GET /users - Status: 200 - Time: 0.0027s
+2026-09-08 15:01:54,396 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0048s
+2026-09-08 15:01:55,203 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0094s
+2026-09-08 15:01:55,205 - app.main - INFO - GET /users - Status: 200 - Time: 0.0092s
+2026-09-08 15:01:55,206 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0123s
+2026-09-08 15:01:55,223 - app.main - INFO - GET /shifts - Status: 200 - Time: 0.0052s
+2026-09-08 15:01:55,229 - app.main - INFO - GET /users - Status: 200 - Time: 0.0084s
+2026-09-08 15:01:55,232 - app.main - INFO - GET /reports/admin/stats - Status: 200 - Time: 0.0134s
+2026-09-08 15:02:11,739 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0060s
+2026-09-08 15:02:30,692 - app.main - INFO - GET /reports/volunteer/attendance - Status: 200 - Time: 0.0039s
+2026-09-08 15:02:33,263 - app.main - INFO - GET /reports/volunteer/pdf - Status: 200 - Time: 0.0083s
+2026-09-08 15:02:54,051 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0064s
+2026-09-08 15:03:11,730 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0042s
+2026-09-08 15:03:54,059 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0052s
+2026-09-08 15:04:12,052 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0038s
+2026-09-08 15:04:54,068 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0076s
+2026-09-08 15:05:19,281 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0036s
+2026-09-08 15:05:53,469 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0050s
+2026-09-08 15:06:12,054 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0055s
+2026-09-08 15:06:53,475 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0030s
+2026-09-08 15:07:53,146 - app.main - INFO - GET /checklist - Status: 200 - Time: 0.0022s
+2026-09-08 15:07:53,172 - app.main - INFO - GET /checklist - Status: 200 - Time: 0.0031s
+2026-09-08 15:07:53,470 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0038s
+2026-09-08 15:07:55,396 - app.main - INFO - GET /users - Status: 200 - Time: 0.0065s
+2026-09-08 15:07:55,400 - app.main - INFO - GET /reports/admin/yearly-stats - Status: 200 - Time: 0.0099s
+2026-09-08 15:07:55,409 - app.main - INFO - GET /users - Status: 200 - Time: 0.0051s
+2026-09-08 15:07:55,418 - app.main - INFO - GET /reports/admin/yearly-stats - Status: 200 - Time: 0.0062s
+2026-09-08 15:08:00,035 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0035s
+2026-09-08 15:08:11,748 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0077s
+2026-09-08 15:08:54,060 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0084s
+2026-09-08 15:09:11,741 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0071s
+2026-09-08 15:10:04,051 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0077s
+2026-09-08 15:10:11,725 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0027s
+2026-09-08 15:11:04,057 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0065s
+2026-09-08 15:11:11,734 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0077s
+2026-09-08 15:12:04,072 - app.main - INFO - GET /notifications - Status: 200 - Time: 0.0099s

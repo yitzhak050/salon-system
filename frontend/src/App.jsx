@@ -1,0 +1,199 @@
+import React, { createContext, useState, useEffect, useContext } from 'react';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import Login from './pages/Login';
+import AdminDashboard from './pages/AdminDashboard';
+import AdminShifts from './pages/AdminShifts';
+import ReportsPage from './pages/ReportsPage';
+import TaskManagement from './pages/TaskManagement';
+import UserManagement from './pages/UserManagement';
+import VolunteerPortal from './pages/VolunteerPortal';
+import VolunteerTasks from './pages/VolunteerTasks';
+import Navbar from './components/Layout/Navbar';
+import Sidebar from './components/Layout/Sidebar';
+import { Box, Typography, Button, Paper } from '@mui/material';
+
+export const AuthContext = createContext(null);
+
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('ErrorBoundary caught an error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <Box sx={{ p: 4, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
+          <Paper sx={{ p: 4, textAlign: 'center', maxWidth: 500, borderRadius: 2, border: '1px solid #ffcdd2' }}>
+            <Typography variant="h5" color="error.main" fontWeight="bold" gutterBottom>
+              אירעה שגיאה בטעינת העמוד
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+              {this.state.error?.message || 'אנא נסה לרענן את העמוד או לחזור לדף הראשי.'}
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
+              <Button variant="contained" color="primary" onClick={() => window.location.reload()}>
+                רענן עמוד
+              </Button>
+              <Button variant="outlined" onClick={() => { this.setState({ hasError: false }); window.location.href = '/'; }}>
+                חזור לדף הבית
+              </Button>
+            </Box>
+          </Paper>
+        </Box>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+const ProtectedRoute = ({ children, allowedRoles }) => {
+  const { user } = useContext(AuthContext);
+  if (!user) return <Navigate to="/login" replace />;
+  if (allowedRoles && !allowedRoles.includes(user.role)) {
+    return <Navigate to="/" replace />;
+  }
+  return children;
+};
+
+const Layout = ({ children }) => {
+  const { user } = useContext(AuthContext);
+  return (
+    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f8fafc' }}>
+      {user && <Navbar />}
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          p: { xs: 1.5, sm: 3 },
+          mt: { xs: 7, sm: 8 },
+          mr: { xs: 0, md: user ? '240px' : 0 },
+          width: { xs: '100%', md: user ? 'calc(100% - 240px)' : '100%' },
+          transition: 'margin-right 0.2s',
+          boxSizing: 'border-box'
+        }}
+      >
+        <ErrorBoundary>
+          {children}
+        </ErrorBoundary>
+      </Box>
+      {user && <Sidebar />}
+    </Box>
+  );
+};
+
+
+function App() {
+  const [user, setUser] = useState(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const toggleSidebar = () => {
+    setMobileOpen(prev => !prev);
+  };
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        setUser({
+          user_id: payload.sub,
+          role: payload.role,
+          name: payload.name || 'משתמש'
+        });
+      } catch (e) {
+        localStorage.removeItem('token');
+      }
+    }
+  }, []);
+
+  const handleLogin = (token) => {
+    localStorage.setItem('token', token);
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    setUser({
+      user_id: payload.sub,
+      role: payload.role,
+      name: payload.name || 'משתמש'
+    });
+    if (payload.role === 'SALON_MANAGER') {
+      navigate('/admin');
+    } else {
+      navigate('/volunteer');
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setUser(null);
+    navigate('/login');
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, setUser, handleLogin, handleLogout, mobileOpen, setMobileOpen, toggleSidebar }}>
+      <Routes>
+        <Route path="/login" element={<Login onLogin={handleLogin} />} />
+        <Route path="/" element={
+          <ProtectedRoute>
+            {user?.role === 'SALON_MANAGER' ? 
+              <Navigate to="/admin" replace /> : 
+              <Navigate to="/volunteer" replace />
+            }
+          </ProtectedRoute>
+        } />
+        
+        {/* נתיבי מנהל בלבד (SALON_MANAGER) */}
+        <Route path="/admin" element={
+          <ProtectedRoute allowedRoles={['SALON_MANAGER']}>
+            <Layout><AdminDashboard /></Layout>
+          </ProtectedRoute>
+        } />
+        <Route path="/admin/shifts" element={
+          <ProtectedRoute allowedRoles={['SALON_MANAGER']}>
+            <Layout><AdminShifts /></Layout>
+          </ProtectedRoute>
+        } />
+        <Route path="/admin/reports" element={
+          <ProtectedRoute allowedRoles={['SALON_MANAGER']}>
+            <Layout><ReportsPage /></Layout>
+          </ProtectedRoute>
+        } />
+        <Route path="/admin/tasks" element={
+          <ProtectedRoute allowedRoles={['SALON_MANAGER']}>
+            <Layout><TaskManagement /></Layout>
+          </ProtectedRoute>
+        } />
+        <Route path="/admin/users" element={
+          <ProtectedRoute allowedRoles={['SALON_MANAGER']}>
+            <Layout><UserManagement /></Layout>
+          </ProtectedRoute>
+        } />
+
+        {/* נתיבי מתנדב ומפעיל סלון */}
+        <Route path="/volunteer" element={
+          <ProtectedRoute allowedRoles={['EVENT_VOLUNTEER', 'SALON_OPERATOR', 'SALON_MANAGER']}>
+            <Layout><VolunteerPortal /></Layout>
+          </ProtectedRoute>
+        } />
+        <Route path="/volunteer/tasks" element={
+          <ProtectedRoute allowedRoles={['EVENT_VOLUNTEER', 'SALON_OPERATOR', 'SALON_MANAGER']}>
+            <Layout><VolunteerTasks /></Layout>
+          </ProtectedRoute>
+        } />
+
+        {/* ברירת מחדל לכל נתיב לא מוכר */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </AuthContext.Provider>
+  );
+}
+
+export default App;
