@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
-import { Container, Paper, Typography, TextField, Button, Box, Alert } from '@mui/material';
+import {
+  Container, Paper, Typography, TextField, Button, Box, Alert,
+  IconButton, InputAdornment
+} from '@mui/material';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import * as api from '../services/api';
 
 const Login = ({ onLogin }) => {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -48,11 +54,24 @@ const Login = ({ onLogin }) => {
             fullWidth
             name="password"
             label="סיסמה"
-            type="password"
+            type={showPassword ? 'text' : 'password'}
             id="password"
             autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={() => setShowPassword(!showPassword)}
+                    edge="end"
+                    aria-label="הצג/הסתר סיסמה"
+                  >
+                    {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                  </IconButton>
+                </InputAdornment>
+              )
+            }}
           />
           <Button
             type="submit"

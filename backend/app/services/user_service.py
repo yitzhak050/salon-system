@@ -61,15 +61,15 @@ async def list_users(db: AsyncSession) -> list:
 
 async def deactivate_user(db: AsyncSession, user_id: str, requester: User) -> User:
     if requester.role != RoleEnum.SALON_MANAGER:
-        raise HTTPException(status_code=403, detail="Only managers can deactivate users")
+        raise HTTPException(status_code=403, detail="Only managers can change user status")
 
     result = await db.execute(select(User).filter(User.id == user_id))
     user = result.scalars().first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    user.is_active = False
-    user.deleted_at = datetime.datetime.utcnow()
+    # Toggle active status - does NOT delete the user
+    user.is_active = not user.is_active
     await db.commit()
     await db.refresh(user)
     return user
@@ -96,7 +96,18 @@ async def hard_delete_user(db: AsyncSession, user_id: str, requester: User) -> d
     user = result.scalars().first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-        
+
+    # First: delete all shift assignments for this user (past and future)
+    from app.models.shift import ShiftAssignment
+    assignments_res = await db.execute(
+        select(ShiftAssignment).filter(ShiftAssignment.user_id == user_id)
+    )
+    for assignment in assignments_res.scalars().all():
+        await db.delete(assignment)
+    
+    await db.flush()  # flush assignments deletion before deleting user
+    
+    # Then permanently delete the user
     await db.delete(user)
     await db.commit()
-    return {"message": "User deleted permanently"}
+    return {"message": "User and all their shift assignments deleted permanently"}

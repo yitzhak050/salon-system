@@ -94,15 +94,17 @@ async def get_shifts_for_month(db: AsyncSession, month: int, year: int):
 
     return shifts
 
-async def assign_volunteer_to_shift(db: AsyncSession, shift_id: str, user_id: str, notes: Optional[str] = None) -> ShiftAssignment:
+async def assign_volunteer_to_shift(db: AsyncSession, shift_id: str, user_id: str, notes: Optional[str] = None, requester: Optional[User] = None) -> ShiftAssignment:
     # Validate shift
     s_res = await db.execute(select(Shift).filter(Shift.id == str(shift_id)))
     shift = s_res.scalars().first()
     if not shift or not shift.is_active:
         raise HTTPException(status_code=400, detail="משמרת לא תקינה או לא פעילה")
-        
-    if shift.date < datetime.date.today():
-        raise HTTPException(status_code=400, detail="לא ניתן להירשם למשמרת בעבר")
+
+    # Block past-shift registration for non-managers
+    is_manager = requester and requester.role == RoleEnum.SALON_MANAGER
+    if shift.date < datetime.date.today() and not is_manager:
+        raise HTTPException(status_code=400, detail="לא ניתן להירשם למשמרת שתאריכה כבר עבר")
         
     # Validate not already assigned
     a_res = await db.execute(select(ShiftAssignment).filter(
@@ -217,6 +219,10 @@ async def update_shift(db: AsyncSession, shift_id: str, req: UpdateShiftRequest,
     return shift
 
 async def custom_shift_signup(db: AsyncSession, req: CustomSignupRequest, user: User) -> ShiftAssignment:
+    # Block past-date signups for non-managers
+    if req.date < datetime.date.today() and user.role != RoleEnum.SALON_MANAGER:
+        raise HTTPException(status_code=400, detail="לא ניתן להירשם להתנדבות שתאריכה כבר עבר")
+
     # Determine slot if omitted
     slot = req.slot
     if not slot:

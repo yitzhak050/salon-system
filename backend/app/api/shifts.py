@@ -65,7 +65,7 @@ async def assign_volunteer_route(
     current_user: User = Depends(get_current_user)
 ):
     target_user = req.user_id if req.user_id else current_user.id
-    return await assign_volunteer_to_shift(db, req.shift_id, target_user, notes=req.notes)
+    return await assign_volunteer_to_shift(db, req.shift_id, target_user, notes=req.notes, requester=current_user)
 
 
 @router.delete("/assign/{assignment_id}")

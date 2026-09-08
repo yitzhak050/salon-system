@@ -8,6 +8,7 @@ import {
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import BlockIcon from '@mui/icons-material/Block';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
@@ -113,10 +114,11 @@ const UserManagement = () => {
     if (!window.confirm(`האם אתה בטוח שברצונך להשבית את המשתמש ${u.name}?`)) return;
     try {
       await api.deactivateUser(u.id);
-      showNotification(`המשתמש ${u.name} הושבת בהצלחה`);
+      const action = u.is_active ? 'הושבת' : 'הופעל מחדש';
+      showNotification(`המשתמש ${u.name} ${action} בהצלחה`);
       fetchUsers();
     } catch (e) {
-      showNotification('שגיאה בהשבתת משתמש', 'error');
+      showNotification('שגיאה בשינוי סטטוס משתמש', 'error');
     }
   };
 
@@ -239,19 +241,19 @@ const UserManagement = () => {
                           <VpnKeyIcon fontSize="small" />
                         </IconButton>
                       </Tooltip>
-                      {u.is_active && u.id !== currentUser?.user_id && (
-                        <Tooltip title="השבת משתמש">
+                      {u.id !== currentUser?.user_id && (
+                        <Tooltip title={u.is_active ? 'השבת משתמש (ימנע התחברות)' : 'הפעל משתמש מחדש'}>
                           <IconButton
-                            color="warning"
+                            color={u.is_active ? 'warning' : 'success'}
                             size="small"
                             onClick={() => handleDeactivate(u)}
                           >
-                            <BlockIcon fontSize="small" />
+                            {u.is_active ? <BlockIcon fontSize="small" /> : <CheckCircleOutlineIcon fontSize="small" />}
                           </IconButton>
                         </Tooltip>
                       )}
                       {u.id !== currentUser?.user_id && (
-                        <Tooltip title="מחק לצמיתות">
+                        <Tooltip title="מחק לצמיתות (כולל כל המשמרות שלו)">
                           <IconButton
                             color="error"
                             size="small"
