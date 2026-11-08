@@ -86,6 +86,12 @@ const Login = ({ onLogin }) => {
             מערכת זו מיועדת לשימוש מורשה בלבד
           </Typography>
         </Box>
+        <Typography variant="caption" color="text.disabled" align="center" sx={{ mt: 3 }}>
+          אתר זה נבנה לעמותת יוצאים לשינוי ע"י{' '}
+          <a href="mailto:Yitzchak.gross@gmail.com" style={{ color: 'inherit', textDecoration: 'underline' }}>
+            יצחק גרוס
+          </a>
+        </Typography>
       </Paper>
     </Container>
   );
