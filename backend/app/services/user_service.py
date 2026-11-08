@@ -7,6 +7,7 @@ from fastapi import HTTPException
 from app.models.user import User, RoleEnum
 from app.schemas.user import UserCreate
 from app.config import settings
+from app.utils.timezone import now_il_naive
 
 # bcrypt 5.x — direct calls (passlib not compatible with bcrypt>=5.0)
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -17,7 +18,7 @@ def get_password_hash(password: str) -> str:
 
 def create_access_token(data: dict) -> str:
     to_encode = data.copy()
-    expire = datetime.datetime.utcnow() + datetime.timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    expire = now_il_naive() + datetime.timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 

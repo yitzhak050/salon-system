@@ -5,6 +5,7 @@ from jose import jwt
 from app.config import settings
 from app.db.session import AsyncSessionLocal
 from app.models.audit_log import AuditLog
+from app.utils.timezone import now_il_naive
 import asyncio
 
 class AuditMiddleware(BaseHTTPMiddleware):
@@ -42,7 +43,7 @@ class AuditMiddleware(BaseHTTPMiddleware):
                 log = AuditLog(
                     user_id=str(user_id),
                     action_type=action_type,
-                    timestamp=datetime.datetime.now(datetime.UTC),
+                    timestamp=now_il_naive(),
                 )
                 session.add(log)
                 await session.commit()

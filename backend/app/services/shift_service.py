@@ -6,6 +6,7 @@ import calendar
 from fastapi import HTTPException
 import uuid
 from typing import Optional
+from app.utils.timezone import now_il_naive
 from app.models.shift import Shift, ShiftSlotEnum, ShiftAssignment
 from app.models.user import User, RoleEnum
 from app.services.notification_service import create_in_app_notification
@@ -158,7 +159,7 @@ async def unassign_volunteer(db: AsyncSession, assignment_id: str, requester: Us
         if shift:
             start_hour = SLOT_START_HOURS.get(shift.slot, 10)
             shift_start_dt = datetime.datetime.combine(shift.date, datetime.time(start_hour, 0))
-            now_dt = datetime.datetime.now()
+            now_dt = now_il_naive()
             if now_dt + datetime.timedelta(hours=24) > shift_start_dt:
                 raise HTTPException(
                     status_code=400,

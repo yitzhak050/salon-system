@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-import datetime
+from app.utils.timezone import now_il
 from app.db.session import get_db
 from app.schemas.shift import (
     ShiftOut, MonthlyShiftsRequest, AssignRequest, ClockRequest,
@@ -84,7 +84,7 @@ async def clock_in_route(
     current_user: User = Depends(get_current_user)
 ):
     target_user = req.user_id if req.user_id else current_user.id
-    return await clock_in_shift(db, req.shift_id, target_user, datetime.datetime.now(datetime.UTC))
+    return await clock_in_shift(db, req.shift_id, target_user, now_il())
 
 @router.post("/clock-out", response_model=ShiftAssignmentOut)
 async def clock_out_route(
@@ -93,7 +93,7 @@ async def clock_out_route(
     current_user: User = Depends(get_current_user)
 ):
     target_user = req.user_id if req.user_id else current_user.id
-    return await clock_out_shift(db, req.shift_id, target_user, datetime.datetime.now(datetime.UTC))
+    return await clock_out_shift(db, req.shift_id, target_user, now_il())
 
 @router.delete("/{shift_id}")
 async def delete_shift_route(

@@ -7,6 +7,7 @@ import re
 import os
 import io
 from typing import Optional
+from app.utils.timezone import now_il_naive
 from app.models.shift import Shift, ShiftAssignment, ShiftSlotEnum
 from app.models.user import User
 from app.schemas.report import VolunteerStats, AdminStats, ShiftGap, AttendanceShiftItem, VolunteerAttendanceReport
@@ -72,7 +73,7 @@ def calculate_actual_hours_for_assignment(assignment: ShiftAssignment, shift: Sh
         return 0.0
 
     if now_dt is None:
-        now_dt = datetime.datetime.now()
+        now_dt = now_il_naive()
 
     sh, sm, _, _, scheduled_duration, _ = get_slot_hours_range(shift.slot, assignment.notes)
     shift_start_dt = datetime.datetime.combine(shift.date, datetime.time(sh, sm))
@@ -106,7 +107,7 @@ async def get_volunteer_stats(db: AsyncSession, user_id: uuid.UUID, goal_hours: 
     res = await db.execute(stmt)
     rows = res.all()
 
-    now_dt = datetime.datetime.now()
+    now_dt = now_il_naive()
     total_hours = 0.0
     shift_count = 0
 
@@ -144,7 +145,7 @@ async def get_all_users_yearly_stats(db: AsyncSession, year: Optional[int] = Non
     res = await db.execute(stmt)
     rows = res.all()
     
-    now_dt = datetime.datetime.now()
+    now_dt = now_il_naive()
     user_hours = {str(u.id): 0.0 for u in users}
     
     for assignment, shift in rows:
@@ -179,7 +180,7 @@ async def get_volunteer_attendance_report(db: AsyncSession, user_id: uuid.UUID, 
     res = await db.execute(stmt)
     rows = res.all()
 
-    now_dt = datetime.datetime.now()
+    now_dt = now_il_naive()
     records = []
     total_hours = 0.0
 
@@ -259,7 +260,7 @@ async def get_admin_stats(db: AsyncSession, month: int, year: int) -> AdminStats
     users = users_res.scalars().all()
 
     shift_lookup = {s.id: s for s in shifts}
-    now_dt = datetime.datetime.now()
+    now_dt = now_il_naive()
 
     user_stats = []
     for u in users:

@@ -4,6 +4,7 @@ from sqlalchemy import Column, String, Boolean, DateTime, Date, Float, ForeignKe
 import enum
 from sqlalchemy.types import Enum
 from app.db.base import Base
+from app.utils.timezone import now_il_naive
 
 class ShiftSlotEnum(str, enum.Enum):
     MORNING = "MORNING"    # 10:00-14:00
@@ -20,7 +21,7 @@ class Shift(Base):
     max_volunteers = Column(Integer, default=1, nullable=False)
     title = Column(String, nullable=True)
     created_by = Column(String(36), ForeignKey("users.id"), nullable=True)
-    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    created_at = Column(DateTime, default=now_il_naive)
 
 class ShiftAssignment(Base):
     __tablename__ = "shift_assignments"
