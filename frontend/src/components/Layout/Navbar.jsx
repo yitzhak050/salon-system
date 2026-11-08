@@ -6,6 +6,56 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { AuthContext } from '../../App';
 import * as api from '../../services/api';
 
+const Clock = () => {
+  const [now, setNow] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const timeStr = now.toLocaleTimeString('he-IL', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  });
+
+  const dateStr = now.toLocaleDateString('he-IL', {
+    weekday: 'short',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
+
+  return (
+    <Box sx={{ textAlign: 'center', lineHeight: 1.1, display: { xs: 'none', sm: 'block' } }}>
+      <Typography
+        sx={{
+          fontFamily: 'monospace',
+          fontSize: '1.1rem',
+          fontWeight: 600,
+          letterSpacing: 2,
+          color: 'inherit',
+          lineHeight: 1.2,
+        }}
+      >
+        {timeStr}
+      </Typography>
+      <Typography
+        sx={{
+          fontSize: '0.65rem',
+          opacity: 0.75,
+          letterSpacing: 0.5,
+          color: 'inherit',
+        }}
+      >
+        {dateStr}
+      </Typography>
+    </Box>
+  );
+};
+
 const Navbar = () => {
   const { user, handleLogout, toggleSidebar } = useContext(AuthContext);
   const [notifications, setNotifications] = useState([]);
@@ -59,6 +109,10 @@ const Navbar = () => {
             סלון קהילתי
           </Typography>
         </Box>
+
+        {/* שעון מרכזי */}
+        <Clock />
+
         <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 } }}>
           <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'block' } }}>
             שלום, {user?.name}
