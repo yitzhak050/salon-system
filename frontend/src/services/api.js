@@ -3,7 +3,7 @@ import axios from 'axios';
 // In production, VITE_API_BASE_URL points to the real backend URL.
 // In dev (Docker), the Vite proxy rewrites /api → http://backend:8000.
 const baseURL = import.meta.env.VITE_API_BASE_URL
-  ? `${import.meta.env.VITE_API_BASE_URL}/api`
+  ? import.meta.env.VITE_API_BASE_URL.replace(/\/+$/, '')
   : '/api';
 
 const api = axios.create({
