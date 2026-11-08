@@ -10,6 +10,7 @@ export default defineConfig({
       usePolling: true,
       interval: 100,
     },
+    // Dev proxy: forwards /api → backend container (only used in `npm run dev`)
     proxy: {
       '/api': {
         target: 'http://backend:8000',
@@ -18,6 +19,9 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    outDir: 'dist',
+    sourcemap: false,
+  },
 });
-
 

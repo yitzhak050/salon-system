@@ -1,0 +1,47 @@
+services:
+  # ── Backend (FastAPI) ──────────────────────────────────────────
+  - type: web
+    name: salon-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: salon-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true          # Render generates a secure random value
+      - key: ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: 480
+      - key: CORS_ORIGINS
+        value: https://salon-frontend.onrender.com   # update after first deploy
+      - key: VOLUNTEER_GOAL_HOURS
+        value: 60
+      - key: FIRST_ADMIN_PHONE
+        value: 0501234567            # change before deploy!
+      - key: FIRST_ADMIN_PASSWORD
+        value: change-me-123         # change before deploy!
+      - key: FIRST_ADMIN_NAME
+        value: מנהל ראשי
+
+  # ── Frontend (React → Nginx) ───────────────────────────────────
+  - type: web
+    name: salon-frontend
+    runtime: docker
+    rootDir: frontend
+    dockerfilePath: ./Dockerfile
+    dockerContext: ./frontend
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: https://salon-backend.onrender.com    # update after backend deploy
+
+# ── PostgreSQL Database ────────────────────────────────────────
+databases:
+  - name: salon-db
+    databaseName: salon_db
+    user: salon_user
+    plan: free
