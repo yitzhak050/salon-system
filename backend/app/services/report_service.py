@@ -213,7 +213,7 @@ async def get_volunteer_attendance_report(
 
     for assignment, shift in rows:
         actual_h = calculate_actual_hours_for_assignment(assignment, shift, now_dt)
-        sh, sm, _, _, dur, hours_range = get_slot_hours_range(shift.slot, assignment.notes)
+        sh, sm, eh, em, dur, hours_range = get_slot_hours_range(shift.slot, assignment.notes)
         shift_start_dt = datetime.datetime.combine(shift.date, datetime.time(sh, sm))
 
         if assignment.clock_out:
@@ -234,6 +234,14 @@ async def get_volunteer_attendance_report(
 
         ci_str = assignment.clock_in.strftime("%H:%M") if assignment.clock_in else None
         co_str = assignment.clock_out.strftime("%H:%M") if assignment.clock_out else None
+
+        # If the shift was credited automatically (or completed without manual clock-in/out),
+        # populate the scheduled start/end hours of the chosen shift automatically.
+        if actual_h > 0:
+            if not ci_str:
+                ci_str = f"{sh:02d}:{sm:02d}"
+            if not co_str:
+                co_str = f"{eh:02d}:{em:02d}"
 
         records.append(AttendanceShiftItem(
             assignment_id=str(assignment.id),

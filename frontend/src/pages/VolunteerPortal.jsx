@@ -430,15 +430,11 @@ const VolunteerPortal = () => {
                 <Typography variant="h6" fontWeight="bold">
                   {myTodayShift
                     ? `משמרת היום שלך: ${shiftSlotLabel(myTodayShift.slot)}`
-                    : 'נוכחות ודיווח כניסה/יציאה להיום'}
+                    : 'סטטוס משמרות להיום'}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   {myTodayShift
-                    ? (myTodayAssignment?.clock_in
-                        ? (myTodayAssignment?.clock_out
-                            ? `המשמרת הסתיימה בהצלחה (יציאה ב-${new Date(myTodayAssignment.clock_out).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })})`
-                            : `נכנסת בשעה ${new Date(myTodayAssignment.clock_in).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })} • משמרת פעילה כעת`)
-                        : 'הינך רשום למשמרת היום! לחץ על הכפתור כדי לדווח כניסה:')
+                    ? 'הינך משובץ/ת למשמרת היום! שעות ההתנדבות מתעדכנות אוטומטית במונה ובדוחות.'
                     : 'אין לך משמרת מתוכננת להיום. מעוניין להגיע? לחץ על משמרת פנויה בלוח למטה להרשמה.'}
                 </Typography>
               </Box>
@@ -446,55 +442,13 @@ const VolunteerPortal = () => {
 
             {myTodayShift && (
               <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
-                {!myTodayAssignment?.clock_in && (
-                  <Button
-                    variant="contained"
-                    color="success"
-                    size="large"
-                    startIcon={<LoginIcon sx={{ fontSize: 30 }} />}
-                    onClick={() => handleQuickClockIn(myTodayShift.id)}
-                    sx={{
-                      py: 1.8,
-                      px: 4,
-                      fontSize: { xs: '1.1rem', sm: '1.25rem' },
-                      fontWeight: 'bold',
-                      borderRadius: 2.5,
-                      boxShadow: '0 4px 14px rgba(46, 125, 50, 0.4)'
-                    }}
-                  >
-                    כניסה למשמרת (Clock In)
-                  </Button>
-                )}
-
-                {myTodayAssignment?.clock_in && !myTodayAssignment?.clock_out && (
-                  <Button
-                    variant="contained"
-                    color="error"
-                    size="large"
-                    startIcon={<LogoutIcon sx={{ fontSize: 30 }} />}
-                    onClick={() => handleQuickClockOut(myTodayShift.id)}
-                    sx={{
-                      py: 1.8,
-                      px: 4,
-                      fontSize: { xs: '1.1rem', sm: '1.25rem' },
-                      fontWeight: 'bold',
-                      borderRadius: 2.5,
-                      boxShadow: '0 4px 14px rgba(211, 47, 47, 0.4)'
-                    }}
-                  >
-                    יציאה ממשמרת (Clock Out)
-                  </Button>
-                )}
-
-                {myTodayAssignment?.clock_out && (
-                  <Chip
-                    icon={<CheckCircleIcon />}
-                    label="משמרת הושלמה בהצלחה! השעות נרשמו במערכת"
-                    color="success"
-                    variant="filled"
-                    sx={{ py: 2.5, px: 1.5, fontSize: '0.95rem', fontWeight: 'bold', borderRadius: 2 }}
-                  />
-                )}
+                <Chip
+                  icon={<CheckCircleIcon />}
+                  label="משובץ/ת למשמרת היום • השעות נרשמות אוטומטית"
+                  color="success"
+                  variant="filled"
+                  sx={{ py: 2.2, px: 1.5, fontSize: '0.95rem', fontWeight: 'bold', borderRadius: 2 }}
+                />
               </Box>
             )}
           </Grid>
@@ -504,7 +458,7 @@ const VolunteerPortal = () => {
             <Paper sx={{ p: 1.5, bgcolor: '#ffffff', borderRadius: 2, border: '1px solid #dcedc8' }}>
               <Typography variant="subtitle2" fontWeight="bold" sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                 <PeopleIcon fontSize="small" color="primary" />
-                מי נמצא / היה היום בסלון ({formatHebrewDate(currentDate)}):
+                מי משובץ היום בסלון ({formatHebrewDate(currentDate)}):
               </Typography>
 
               {todayAttendees.length === 0 ? (
@@ -515,16 +469,6 @@ const VolunteerPortal = () => {
                 <Stack spacing={1}>
                   {todayAttendees.map((att, idx) => {
                     const isCurrentUser = att.user_id === user?.user_id;
-                    let presenceStatus = 'מתוכנן להמשך';
-                    let badgeColor = 'default';
-                    if (att.clock_out) {
-                      presenceStatus = `סיים/ה (${new Date(att.clock_out).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })})`;
-                      badgeColor = 'info';
-                    } else if (att.clock_in) {
-                      presenceStatus = `במשמרת כעת (${new Date(att.clock_in).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })})`;
-                      badgeColor = 'success';
-                    }
-
                     return (
                       <Box
                         key={idx}
@@ -545,7 +489,7 @@ const VolunteerPortal = () => {
                           </Typography>
                           <Chip label={shiftSlotLabel(att.shiftSlot)} size="small" variant="outlined" sx={{ height: 20, fontSize: '0.65rem' }} />
                         </Box>
-                        <Chip label={presenceStatus} color={badgeColor} size="small" sx={{ height: 20, fontSize: '0.7rem' }} />
+                        <Chip label="משובץ/ת" color="success" variant="outlined" size="small" sx={{ height: 20, fontSize: '0.7rem' }} />
                       </Box>
                     );
                   })}
@@ -936,17 +880,7 @@ const VolunteerPortal = () => {
                     {isPartialHours ? 'הירשם לשעות שנבחרו' : 'הירשם למשמרת'}
                   </Button>
                 ) : (
-                  <>
-                    {!myAssignment?.clock_in && (
-                      <Button variant="contained" color="success" onClick={handleClockIn}>כניסה למשמרת</Button>
-                    )}
-                    {myAssignment?.clock_in && !myAssignment?.clock_out && (
-                      <Button variant="contained" color="error" onClick={handleClockOut}>יציאה ממשמרת</Button>
-                    )}
-                    {myAssignment?.clock_out && (
-                      <Chip label="המשמרת הסתיימה" color="success" />
-                    )}
-                  </>
+                  <Chip label="משובץ/ת למשמרת זו" color="success" variant="outlined" />
                 )}
               </Box>
             </DialogActions>
