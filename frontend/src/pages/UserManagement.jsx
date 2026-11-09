@@ -3,9 +3,11 @@ import {
   Container, Typography, Box, Paper, Table, TableBody, TableCell,
   TableHead, TableRow, Button, Dialog, DialogTitle, DialogContent,
   DialogActions, TextField, MenuItem, Select, FormControl, InputLabel,
-  Chip, IconButton, Alert, Snackbar, Tooltip, Card, CardContent
+  Chip, IconButton, Alert, Snackbar, Tooltip, Card, CardContent, Divider
 } from '@mui/material';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
+import DownloadIcon from '@mui/icons-material/Download';
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import BlockIcon from '@mui/icons-material/Block';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
@@ -40,9 +42,16 @@ const UserManagement = () => {
   const [newUserData, setNewUserData] = useState({
     name: '',
     phone: '',
+    email: '',
     role: 'EVENT_VOLUNTEER',
     password: ''
   });
+
+  // Bulk Excel Import Dialog State
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
+  const [excelFile, setExcelFile] = useState(null);
+  const [importing, setImporting] = useState(false);
+  const [importResult, setImportResult] = useState(null);
 
   // Reset Password Dialog State
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
@@ -83,13 +92,53 @@ const UserManagement = () => {
       return;
     }
     try {
-      await api.createUser(newUserData);
+      await api.createUser({
+        ...newUserData,
+        email: newUserData.email?.trim() || null
+      });
       showNotification('המשתמש נוצר בהצלחה');
       setAddDialogOpen(false);
-      setNewUserData({ name: '', phone: '', role: 'EVENT_VOLUNTEER', password: '' });
+      setNewUserData({ name: '', phone: '', email: '', role: 'EVENT_VOLUNTEER', password: '' });
       fetchUsers();
     } catch (e) {
       showNotification(e.response?.data?.detail || 'שגיאה ביצירת משתמש', 'error');
+    }
+  };
+
+  const handleDownloadTemplate = async () => {
+    try {
+      const res = await api.downloadUsersExcelTemplate();
+      const url = window.URL.createObjectURL(
+        new Blob([res.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+      );
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'users_template.xlsx');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (e) {
+      showNotification('שגיאה בהורדת קובץ לדוגמה', 'error');
+    }
+  };
+
+  const handleBulkImport = async (e) => {
+    e.preventDefault();
+    if (!excelFile) {
+      showNotification('נא לבחור קובץ אקסל (.xlsx) או CSV', 'warning');
+      return;
+    }
+    setImporting(true);
+    setImportResult(null);
+    try {
+      const res = await api.bulkImportUsers(excelFile);
+      setImportResult(res.data);
+      showNotification(`נוצרו ${res.data.created_count} משתמשים חדשים בהצלחה!`);
+      fetchUsers();
+    } catch (e) {
+      showNotification(e.response?.data?.detail || 'שגיאה בייבוא קובץ המשתמשים', 'error');
+    } finally {
+      setImporting(false);
     }
   };
 
@@ -150,22 +199,36 @@ const UserManagement = () => {
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 1.5 }}>
         <Typography variant="h4" fontWeight="bold">
           ניהול משתמשים
         </Typography>
-        <Box sx={{ display: 'flex', gap: 1 }}>
+        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
           <Button variant="outlined" startIcon={<RefreshIcon />} onClick={fetchUsers} disabled={loading}>
             רענן
           </Button>
           {isManager && (
-            <Button
-              variant="contained"
-              startIcon={<PersonAddIcon />}
-              onClick={() => setAddDialogOpen(true)}
-            >
-              הוסף משתמש חדש
-            </Button>
+            <>
+              <Button
+                variant="outlined"
+                color="secondary"
+                startIcon={<UploadFileIcon />}
+                onClick={() => {
+                  setExcelFile(null);
+                  setImportResult(null);
+                  setImportDialogOpen(true);
+                }}
+              >
+                העלאת קובץ אקסל
+              </Button>
+              <Button
+                variant="contained"
+                startIcon={<PersonAddIcon />}
+                onClick={() => setAddDialogOpen(true)}
+              >
+                הוסף משתמש חדש
+              </Button>
+            </>
           )}
         </Box>
       </Box>
@@ -180,12 +243,13 @@ const UserManagement = () => {
         </Card>
       )}
 
-      <Paper sx={{ width: '100%', overflow: 'hidden', borderRadius: 2, boxShadow: 2 }}>
+      <Paper sx={{ width: '100%', overflow: 'auto', borderRadius: 2, boxShadow: 2 }}>
         <Table>
           <TableHead sx={{ bgcolor: 'grey.100' }}>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold' }}>שם מלא</TableCell>
               <TableCell sx={{ fontWeight: 'bold' }}>מספר טלפון</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>אימייל</TableCell>
               <TableCell sx={{ fontWeight: 'bold' }}>תפקיד</TableCell>
               <TableCell sx={{ fontWeight: 'bold' }}>סטטוס</TableCell>
               <TableCell sx={{ fontWeight: 'bold' }}>שעות שנתיות</TableCell>
@@ -198,6 +262,7 @@ const UserManagement = () => {
               <TableRow key={u.id} hover>
                 <TableCell sx={{ fontWeight: 500 }}>{u.name}</TableCell>
                 <TableCell dir="ltr" align="right">{u.phone}</TableCell>
+                <TableCell dir="ltr" align="right">{u.email || '—'}</TableCell>
                 <TableCell>
                   <Chip
                     label={roleLabels[u.role] || u.role}
@@ -270,7 +335,7 @@ const UserManagement = () => {
             ))}
             {users.length === 0 && !loading && (
               <TableRow>
-                <TableCell colSpan={isManager ? 7 : 6} align="center" sx={{ py: 3 }}>
+                <TableCell colSpan={isManager ? 8 : 7} align="center" sx={{ py: 3 }}>
                   לא נמצאו משתמשים במערכת
                 </TableCell>
               </TableRow>
@@ -300,6 +365,14 @@ const UserManagement = () => {
                 value={newUserData.phone}
                 onChange={(e) => setNewUserData({ ...newUserData, phone: e.target.value })}
               />
+              <TextField
+                label="אימייל (אופציונלי)"
+                type="email"
+                fullWidth
+                placeholder="example@email.com"
+                value={newUserData.email}
+                onChange={(e) => setNewUserData({ ...newUserData, email: e.target.value })}
+              />
               <FormControl fullWidth>
                 <InputLabel>תפקיד</InputLabel>
                 <Select
@@ -325,6 +398,87 @@ const UserManagement = () => {
           <DialogActions sx={{ p: 2 }}>
             <Button onClick={() => setAddDialogOpen(false)}>ביטול</Button>
             <Button type="submit" variant="contained">צור משתמש</Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+
+      {/* Bulk Excel Import Dialog */}
+      <Dialog open={importDialogOpen} onClose={() => setImportDialogOpen(false)} maxWidth="sm" fullWidth>
+        <form onSubmit={handleBulkImport}>
+          <DialogTitle fontWeight="bold">ייבוא משתמשים מקובץ אקסל / CSV</DialogTitle>
+          <DialogContent>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+              <Alert severity="info">
+                העלה קובץ אקסל (<strong>.xlsx</strong>) או CSV עם העמודות הבאות בשורה הראשונה:
+                <br />
+                <strong>שם מלא | מספר טלפון | סיסמא</strong> (וניתן להוסיף גם עמודת <strong>אימייל</strong>).
+                <br />
+                כל הסיסמאות מוצפנות אוטומטית (Hash) לפני שמירתן במסד הנתונים.
+              </Alert>
+
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
+                <Typography variant="body2" color="text.secondary">
+                  רוצה תבנית מוכנה למילוי?
+                </Typography>
+                <Button
+                  size="small"
+                  variant="outlined"
+                  startIcon={<DownloadIcon />}
+                  onClick={handleDownloadTemplate}
+                >
+                  הורד קובץ אקסל לדוגמה
+                </Button>
+              </Box>
+
+              <Divider />
+
+              <Button
+                variant="outlined"
+                component="label"
+                startIcon={<UploadFileIcon />}
+                sx={{ py: 1.5, borderStyle: 'dashed' }}
+              >
+                {excelFile ? `נבחר: ${excelFile.name}` : 'בחר קובץ אקסל (.xlsx) או CSV מהמחשב'}
+                <input
+                  type="file"
+                  accept=".xlsx,.csv"
+                  hidden
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files[0]) {
+                      setExcelFile(e.target.files[0]);
+                      setImportResult(null);
+                    }
+                  }}
+                />
+              </Button>
+
+              {importResult && (
+                <Box sx={{ mt: 1 }}>
+                  <Alert severity={importResult.created_count > 0 ? 'success' : 'warning'} sx={{ mb: 1 }}>
+                    נוצרו <strong>{importResult.created_count}</strong> משתמשים חדשים.
+                    {importResult.skipped_count > 0 && ` (דולגו ${importResult.skipped_count} שורות)`}
+                  </Alert>
+                  {importResult.errors && importResult.errors.length > 0 && (
+                    <Paper variant="outlined" sx={{ p: 1.5, maxHeight: 150, overflow: 'auto', bgcolor: 'grey.50' }}>
+                      <Typography variant="caption" fontWeight="bold" display="block" gutterBottom>
+                        פירוט שורות שדולגו:
+                      </Typography>
+                      {importResult.errors.map((err, idx) => (
+                        <Typography key={idx} variant="caption" display="block" color="text.secondary">
+                          • {err}
+                        </Typography>
+                      ))}
+                    </Paper>
+                  )}
+                </Box>
+              )}
+            </Box>
+          </DialogContent>
+          <DialogActions sx={{ p: 2 }}>
+            <Button onClick={() => setImportDialogOpen(false)}>סגור</Button>
+            <Button type="submit" variant="contained" disabled={!excelFile || importing}>
+              {importing ? 'מייבא משתמשים...' : 'העלה וצור משתמשים'}
+            </Button>
           </DialogActions>
         </form>
       </Dialog>

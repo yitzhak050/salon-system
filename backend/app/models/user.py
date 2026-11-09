@@ -18,6 +18,7 @@ class User(Base):
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     name = Column(String, nullable=False)
     phone = Column(String, unique=True, nullable=False, index=True)
+    email = Column(String, nullable=True)
     hashed_password = Column(String, nullable=False)
     role = Column(Enum(RoleEnum), nullable=False)
     is_active = Column(Boolean, default=True)

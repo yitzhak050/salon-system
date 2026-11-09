@@ -8,6 +8,7 @@ import TaskManagement from './pages/TaskManagement';
 import UserManagement from './pages/UserManagement';
 import VolunteerPortal from './pages/VolunteerPortal';
 import VolunteerTasks from './pages/VolunteerTasks';
+import UserProfile from './pages/UserProfile';
 import Navbar from './components/Layout/Navbar';
 import Sidebar from './components/Layout/Sidebar';
 import { Box, Typography, Button, Paper } from '@mui/material';
@@ -215,6 +216,11 @@ function App() {
         <Route path="/volunteer/tasks" element={
           <ProtectedRoute allowedRoles={['EVENT_VOLUNTEER', 'SALON_OPERATOR', 'SALON_MANAGER']}>
             <Layout><VolunteerTasks /></Layout>
+          </ProtectedRoute>
+        } />
+        <Route path="/profile" element={
+          <ProtectedRoute allowedRoles={['EVENT_VOLUNTEER', 'SALON_OPERATOR', 'SALON_MANAGER']}>
+            <Layout><UserProfile /></Layout>
           </ProtectedRoute>
         } />
 

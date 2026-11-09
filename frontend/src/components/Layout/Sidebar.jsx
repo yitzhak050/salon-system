@@ -5,7 +5,7 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import PeopleIcon from '@mui/icons-material/People';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { AuthContext } from '../../App';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -24,11 +24,13 @@ const Sidebar = () => {
     { text: 'דוחות', icon: <AssessmentIcon />, path: '/admin/reports' },
     { text: 'ניהול משימות', icon: <AssignmentIcon />, path: '/admin/tasks' },
     { text: 'ניהול משתמשים', icon: <PeopleIcon />, path: '/admin/users' },
+    { text: 'פרופיל אישי', icon: <AccountCircleIcon />, path: '/profile' },
   ];
 
   const volunteerMenu = [
     { text: 'לוח משמרות אישי', icon: <CalendarMonthIcon />, path: '/volunteer' },
     { text: 'משימות סגירה', icon: <AssignmentIcon />, path: '/volunteer/tasks' },
+    { text: 'פרופיל אישי', icon: <AccountCircleIcon />, path: '/profile' },
   ];
 
   // Only SALON_MANAGER sees adminMenu; SALON_OPERATOR and EVENT_VOLUNTEER see volunteerMenu
@@ -100,4 +102,3 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
-

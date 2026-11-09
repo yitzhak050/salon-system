@@ -1,4 +1,4 @@
-﻿import axios from 'axios';
+import axios from 'axios';
 
 // In production, VITE_API_BASE_URL points to the real backend URL.
 // In dev (Docker), the Vite proxy rewrites /api → http://backend:8000.
@@ -82,5 +82,20 @@ export const resetPassword = (userId, password) => api.put(`/users/${userId}/res
 export const deactivateUser = (userId) => api.delete(`/users/${userId}`);
 export const hardDeleteUser = (userId) => api.delete(`/users/${userId}/hard`);
 
-export default api;
+// פרופיל אישי וייבוא משתמשים מאקסל
+export const getMyProfile = () => api.get('/users/me');
+export const updateMyProfile = (data) => api.put('/users/me/profile', data);
+export const verifyMyPassword = (oldPassword) => api.post('/users/me/verify-password', { old_password: oldPassword });
+export const changeMyPassword = (oldPassword, newPassword) =>
+  api.put('/users/me/change-password', { old_password: oldPassword, new_password: newPassword });
+export const bulkImportUsers = (file) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  return api.post('/users/bulk-import', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+};
+export const downloadUsersExcelTemplate = () =>
+  api.get('/users/excel-template', { responseType: 'blob' });
 
+export default api;

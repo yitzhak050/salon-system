@@ -32,6 +32,7 @@ async def lifespan(app: FastAPI):
         try:
             await conn.execute(text("ALTER TABLE shifts ADD COLUMN IF NOT EXISTS max_volunteers INTEGER DEFAULT 1;"))
             await conn.execute(text("ALTER TABLE shifts ADD COLUMN IF NOT EXISTS title VARCHAR;"))
+            await conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS email VARCHAR;"))
         except Exception:
             pass
 
