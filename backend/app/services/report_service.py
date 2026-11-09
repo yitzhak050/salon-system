@@ -253,6 +253,7 @@ async def get_volunteer_attendance_report(
     return VolunteerAttendanceReport(
         user_id=str(user_id),
         user_name=user.name if user else "מתנדב",
+        user_phone=user.phone if user else None,
         year=report_year,
         period_label=period_label,
         total_hours=round(total_hours, 1),

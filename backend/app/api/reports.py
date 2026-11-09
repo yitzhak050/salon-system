@@ -60,6 +60,16 @@ async def admin_pdf_route(month: int, year: int, db: AsyncSession = Depends(get_
 async def admin_yearly_stats_route(year: Optional[int] = Query(None), db: AsyncSession = Depends(get_db), current_user: User = Depends(require_manager)):
     return await get_all_users_yearly_stats(db, year=year)
 
+@router.get("/admin/volunteer/{user_id}/attendance", response_model=VolunteerAttendanceReport)
+async def admin_volunteer_attendance_route(
+    user_id: str,
+    year: Optional[int] = Query(None),
+    filter_type: Optional[str] = Query(None),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_manager)
+):
+    return await get_volunteer_attendance_report(db, user_id, year=year, filter_type=filter_type)
+
 @router.get("/admin/volunteer/{user_id}/pdf")
 async def admin_volunteer_pdf_route(
     user_id: str,

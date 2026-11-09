@@ -63,6 +63,13 @@ export const downloadVolunteerPdf = (year = null, filterType = null) => {
 };
 export const downloadAdminPdf = (month, year) => api.get(`/reports/admin/pdf?month=${month}&year=${year}`, { responseType: 'blob' });
 export const getAllUsersYearlyStats = (year) => api.get('/reports/admin/yearly-stats' + (year ? `?year=${year}` : ''));
+export const getAdminVolunteerAttendanceReport = (userId, year = null, filterType = null) => {
+  const params = [];
+  if (year) params.push(`year=${year}`);
+  if (filterType) params.push(`filter_type=${filterType}`);
+  const q = params.length > 0 ? `?${params.join('&')}` : '';
+  return api.get(`/reports/admin/volunteer/${userId}/attendance${q}`);
+};
 export const downloadAdminVolunteerPdf = (userId, year = null, filterType = null) => {
   const params = [];
   if (year) params.push(`year=${year}`);
@@ -80,7 +87,7 @@ export const getUsers = () => api.get('/users');
 export const createUser = (data) => api.post('/users', data);
 export const resetPassword = (userId, password) => api.put(`/users/${userId}/reset-password`, { password });
 export const deactivateUser = (userId) => api.delete(`/users/${userId}`);
-export const hardDeleteUser = (userId) => api.delete(`/users/${userId}/hard`);
+export const hardDeleteUser = (userId, force = false) => api.delete(`/users/${userId}/hard${force ? '?force=true' : ''}`);
 
 // פרופיל אישי וייבוא משתמשים מאקסל
 export const getMyProfile = () => api.get('/users/me');

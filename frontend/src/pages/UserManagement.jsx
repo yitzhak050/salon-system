@@ -13,7 +13,9 @@ import BlockIcon from '@mui/icons-material/Block';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import { downloadVolunteerAttendancePdf } from '../utils/pdfGenerator';
 import * as api from '../services/api';
 import { AuthContext } from '../App';
 
@@ -57,6 +59,14 @@ const UserManagement = () => {
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [newPassword, setNewPassword] = useState('');
+
+  // Future Shifts Delete Confirmation Dialog State
+  const [futureDeleteDialog, setFutureDeleteDialog] = useState({
+    open: false,
+    user: null,
+    futureShiftsCount: 0,
+    deleting: false,
+  });
 
   const isManager = currentUser?.role === 'SALON_MANAGER';
 
@@ -172,27 +182,53 @@ const UserManagement = () => {
   };
 
   const handleHardDelete = async (u) => {
-    if (!window.confirm(`האם אתה בטוח שברצונך למחוק משתמש זה לצמיתות? (${u.name})`)) return;
+    if (!window.confirm(`האם אתה בטוח שברצונך למחוק את המשתמש ${u.name} לצמיתות?`)) return;
     try {
-      await api.hardDeleteUser(u.id);
+      await api.hardDeleteUser(u.id, false);
       showNotification(`המשתמש ${u.name} נמחק לצמיתות`);
       fetchUsers();
     } catch (e) {
-      showNotification('שגיאה במחיקת משתמש לצמיתות, ייתכן ויש לו משמרות משויכות', 'error');
+      const status = e.response?.status;
+      const detail = e.response?.data?.detail;
+      if (status === 409 && detail && detail.code === 'HAS_FUTURE_SHIFTS') {
+        setFutureDeleteDialog({
+          open: true,
+          user: u,
+          futureShiftsCount: detail.future_shifts_count || 1,
+          deleting: false,
+        });
+      } else {
+        showNotification(
+          (typeof detail === 'string' ? detail : detail?.message) || 'שגיאה במחיקת משתמש לצמיתות',
+          'error'
+        );
+      }
+    }
+  };
+
+  const handleConfirmForceDelete = async () => {
+    const u = futureDeleteDialog.user;
+    if (!u) return;
+    setFutureDeleteDialog((prev) => ({ ...prev, deleting: true }));
+    try {
+      await api.hardDeleteUser(u.id, true);
+      showNotification(`המשתמש ${u.name} וכל המשמרות העתידיות שלו נמחקו לצמיתות`);
+      setFutureDeleteDialog({ open: false, user: null, futureShiftsCount: 0, deleting: false });
+      fetchUsers();
+    } catch (e) {
+      setFutureDeleteDialog((prev) => ({ ...prev, deleting: false }));
+      showNotification('שגיאה במחיקת המשתמש והמשמרות שלו', 'error');
     }
   };
 
   const handleDownloadReport = async (u) => {
     try {
       const year = new Date().getFullYear();
-      const res = await api.downloadAdminVolunteerPdf(u.id, year);
-      const url = window.URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `volunteer_report_${u.name}_${year}.pdf`);
-      document.body.appendChild(link);
-      link.click();
+      const res = await api.getAdminVolunteerAttendanceReport(u.id, year, 'year');
+      downloadVolunteerAttendancePdf(res.data, u, 60);
+      showNotification(`דוח הנוכחות של ${u.name} הורד בהצלחה!`);
     } catch (e) {
+      console.error(e);
       showNotification('שגיאה בהורדת דוח מתנדב', 'error');
     }
   };
@@ -285,7 +321,7 @@ const UserManagement = () => {
                 {isManager && (
                   <TableCell align="center">
                     <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
-                      <Tooltip title="הורד דוח שעות">
+                      <Tooltip title="הורד דוח שעות (PDF)">
                         <IconButton
                           color="info"
                           size="small"
@@ -318,7 +354,7 @@ const UserManagement = () => {
                         </Tooltip>
                       )}
                       {u.id !== currentUser?.user_id && (
-                        <Tooltip title="מחק לצמיתות (כולל כל המשמרות שלו)">
+                        <Tooltip title="מחק משתמש לצמיתות">
                           <IconButton
                             color="error"
                             size="small"
@@ -481,6 +517,44 @@ const UserManagement = () => {
             </Button>
           </DialogActions>
         </form>
+      </Dialog>
+
+      {/* Future Shifts Warning Dialog on User Deletion */}
+      <Dialog
+        open={futureDeleteDialog.open}
+        onClose={() => !futureDeleteDialog.deleting && setFutureDeleteDialog({ open: false, user: null, futureShiftsCount: 0, deleting: false })}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'error.main', fontWeight: 'bold' }}>
+          <WarningAmberIcon color="error" />
+          למשתמש יש משמרות עתידיות!
+        </DialogTitle>
+        <DialogContent>
+          <Alert severity="warning" sx={{ mb: 2 }}>
+            למשתמש <strong>{futureDeleteDialog.user?.name}</strong> יש{' '}
+            <strong>{futureDeleteDialog.futureShiftsCount}</strong> משמרות עתידיות משובצות.
+          </Alert>
+          <Typography variant="body2" color="text.secondary">
+            האם ברצונך למחוק את המשתמש בכל זאת? לחיצה על <strong>"מחק בכל זאת"</strong> תמחק את המשתמש ותסיר את כל המשמרות העתידיות המשובצות שלו.
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ p: 2, gap: 1 }}>
+          <Button
+            onClick={() => setFutureDeleteDialog({ open: false, user: null, futureShiftsCount: 0, deleting: false })}
+            disabled={futureDeleteDialog.deleting}
+          >
+            ביטול
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={handleConfirmForceDelete}
+            disabled={futureDeleteDialog.deleting}
+          >
+            {futureDeleteDialog.deleting ? 'מוחק...' : 'מחק בכל זאת (כולל משמרות עתידיות)'}
+          </Button>
+        </DialogActions>
       </Dialog>
 
       {/* Reset Password Dialog */}

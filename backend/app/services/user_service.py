@@ -96,7 +96,7 @@ async def reset_user_password(db: AsyncSession, user_id: str, new_password: str,
     await db.refresh(user)
     return user
 
-async def hard_delete_user(db: AsyncSession, user_id: str, requester: User) -> dict:
+async def hard_delete_user(db: AsyncSession, user_id: str, requester: User, force: bool = False) -> dict:
     if requester.role != RoleEnum.SALON_MANAGER:
         raise HTTPException(status_code=403, detail="Only managers can delete users")
     
@@ -105,20 +105,78 @@ async def hard_delete_user(db: AsyncSession, user_id: str, requester: User) -> d
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    # First: delete all shift assignments for this user (past and future)
-    from app.models.shift import ShiftAssignment
-    assignments_res = await db.execute(
-        select(ShiftAssignment).filter(ShiftAssignment.user_id == user_id)
+    from app.models.shift import Shift, ShiftAssignment
+    from app.models.closing_checklist import ClosingTaskCompletion
+    from app.models.notification import Notification
+
+    now_dt = now_il_naive()
+    today_date = now_dt.date()
+
+    # Check user's shift assignments
+    stmt = (
+        select(ShiftAssignment, Shift)
+        .outerjoin(Shift, ShiftAssignment.shift_id == Shift.id)
+        .filter(ShiftAssignment.user_id == user_id)
     )
-    for assignment in assignments_res.scalars().all():
+    rows = (await db.execute(stmt)).all()
+
+    future_shifts_count = 0
+    for assignment, shift in rows:
+        if shift and shift.date:
+            if shift.date > today_date:
+                future_shifts_count += 1
+            elif shift.date == today_date:
+                slot_val = shift.slot.value if hasattr(shift.slot, 'value') else str(shift.slot)
+                end_hour = 14 if slot_val == "MORNING" else (18 if slot_val == "AFTERNOON" else 22)
+                if now_dt < datetime.datetime.combine(shift.date, datetime.time(end_hour, 0)):
+                    future_shifts_count += 1
+
+    # Only warn if the user has FUTURE shifts and force=False.
+    # Past shifts NEVER block deletion!
+    if future_shifts_count > 0 and not force:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "code": "HAS_FUTURE_SHIFTS",
+                "future_shifts_count": future_shifts_count,
+                "message": f"למשתמש {user.name} יש {future_shifts_count} משמרות עתידיות משובצות.",
+            },
+        )
+
+    # Clean up all foreign key dependencies so deletion always succeeds cleanly:
+    assignment_ids = [assignment.id for assignment, _ in rows]
+    if assignment_ids:
+        completions_res = await db.execute(
+            select(ClosingTaskCompletion).filter(ClosingTaskCompletion.shift_assignment_id.in_(assignment_ids))
+        )
+        for comp in completions_res.scalars().all():
+            await db.delete(comp)
+        await db.flush()
+
+    for assignment, _ in rows:
         await db.delete(assignment)
-    
-    await db.flush()  # flush assignments deletion before deleting user
-    
-    # Then permanently delete the user
+
+    notifications_res = await db.execute(
+        select(Notification).filter(Notification.user_id == user_id)
+    )
+    for notif in notifications_res.scalars().all():
+        await db.delete(notif)
+
+    created_shifts_res = await db.execute(
+        select(Shift).filter(Shift.created_by == user_id)
+    )
+    for sh in created_shifts_res.scalars().all():
+        sh.created_by = None
+
+    await db.flush()
+
+    # Permanently delete the user
     await db.delete(user)
     await db.commit()
-    return {"message": "User and all their shift assignments deleted permanently"}
+    return {
+        "message": "User and all their shift assignments deleted permanently",
+        "deleted_future_shifts": future_shifts_count,
+    }
 
 async def update_user_profile(db: AsyncSession, current_user: User, email: Optional[str] = None, name: Optional[str] = None) -> User:
     if email is not None:

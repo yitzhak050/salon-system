@@ -123,7 +123,8 @@ async def delete_user_route(
 @router.delete("/{user_id}/hard")
 async def hard_delete_user_route(
     user_id: str,
+    force: bool = False,
     db: AsyncSession = Depends(get_db),
     requester: User = Depends(require_manager),
 ):
-    return await hard_delete_user(db, user_id, requester)
+    return await hard_delete_user(db, user_id, requester, force=force)

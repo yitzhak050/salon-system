@@ -12,6 +12,7 @@ import AssessmentIcon from '@mui/icons-material/Assessment';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import GroupsIcon from '@mui/icons-material/Groups';
+import { downloadAdminMonthlyReportPdf } from '../utils/pdfGenerator';
 import * as api from '../services/api';
 
 const ReportsPage = () => {
@@ -48,15 +49,15 @@ const ReportsPage = () => {
     fetchReportData();
   }, [month, year]);
 
-  const handleDownloadBackendPdf = async () => {
+  const handleDownloadBackendPdf = () => {
     try {
-      const res = await api.downloadAdminPdf(month, year);
-      const url = window.URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `salon-report-${month}-${year}.pdf`);
-      document.body.appendChild(link);
-      link.click();
+      downloadAdminMonthlyReportPdf({
+        month,
+        year,
+        stats: filteredStats,
+        goalHours,
+        shiftsGaps
+      });
     } catch (e) {
       console.error(e);
     }

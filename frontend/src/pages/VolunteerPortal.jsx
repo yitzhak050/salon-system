@@ -28,6 +28,7 @@ import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import ShiftCalendar from '../components/Calendar/ShiftCalendar';
 import HoursProgress from '../components/ProgressBar/HoursProgress';
 import { formatHebrewDate, shiftSlotLabel } from '../utils/dateUtils';
+import { downloadVolunteerAttendancePdf } from '../utils/pdfGenerator';
 import * as api from '../services/api';
 import { AuthContext } from '../App';
 
@@ -290,9 +291,13 @@ const VolunteerPortal = () => {
   };
 
   const handleDownloadPdfFile = () => {
-    // Uses the browser print dialog where user can choose 'Save as PDF' 
-    // guaranteeing 100% exact match to the screen template and crisp Hebrew fonts!
-    window.print();
+    try {
+      downloadVolunteerAttendancePdf(attendanceReport, user, goalHours);
+      showNotification('קובץ ה-PDF הורד בהצלחה!');
+    } catch (e) {
+      console.error(e);
+      showNotification('שגיאה בהפקת קובץ ה-PDF', 'error');
+    }
   };
 
   // My monthly shifts count and commitments
@@ -1073,8 +1078,8 @@ const VolunteerPortal = () => {
               <Grid container spacing={2} sx={{ mb: 3 }}>
                 <Grid item xs={12} sm={6}>
                   <Paper sx={{ p: 2, bgcolor: '#f5f5f5', borderRadius: 2 }}>
-                    <Typography variant="body1"><strong>שם המתנדב/ת:</strong> {user?.name}</Typography>
-                    <Typography variant="body1" sx={{ mt: 0.5 }}><strong>טלפון:</strong> {user?.phone || '—'}</Typography>
+                    <Typography variant="body1"><strong>שם המתנדב/ת:</strong> {attendanceReport?.user_name || user?.name}</Typography>
+                    <Typography variant="body1" sx={{ mt: 0.5 }}><strong>טלפון:</strong> {attendanceReport?.user_phone || user?.phone || '—'}</Typography>
                     <Typography variant="body1" sx={{ mt: 0.5 }}><strong>תפקיד:</strong> מתנדב / אחראי משמרת</Typography>
                   </Paper>
                 </Grid>
