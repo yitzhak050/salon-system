@@ -46,12 +46,30 @@ export const getNotifications = () => api.get('/notifications');
 export const markRead = (id) => api.put(`/notifications/${id}/read`);
 export const markAllRead = () => api.put('/notifications/read-all');
 export const getVolunteerStats = (year) => api.get('/reports/volunteer/stats' + (year ? `?year=${year}` : ''));
-export const getVolunteerAttendanceReport = (year) => api.get('/reports/volunteer/attendance' + (year ? `?year=${year}` : ''));
+export const getVolunteerAttendanceReport = (year = null, filterType = null) => {
+  const params = [];
+  if (year) params.push(`year=${year}`);
+  if (filterType) params.push(`filter_type=${filterType}`);
+  const q = params.length > 0 ? `?${params.join('&')}` : '';
+  return api.get(`/reports/volunteer/attendance${q}`);
+};
 export const getAdminStats = (month, year) => api.get(`/reports/admin/stats?month=${month}&year=${year}`);
-export const downloadVolunteerPdf = (year) => api.get('/reports/volunteer/pdf' + (year ? `?year=${year}` : ''), { responseType: 'blob' });
+export const downloadVolunteerPdf = (year = null, filterType = null) => {
+  const params = [];
+  if (year) params.push(`year=${year}`);
+  if (filterType) params.push(`filter_type=${filterType}`);
+  const q = params.length > 0 ? `?${params.join('&')}` : '';
+  return api.get(`/reports/volunteer/pdf${q}`, { responseType: 'blob' });
+};
 export const downloadAdminPdf = (month, year) => api.get(`/reports/admin/pdf?month=${month}&year=${year}`, { responseType: 'blob' });
 export const getAllUsersYearlyStats = (year) => api.get('/reports/admin/yearly-stats' + (year ? `?year=${year}` : ''));
-export const downloadAdminVolunteerPdf = (userId, year) => api.get(`/reports/admin/volunteer/${userId}/pdf` + (year ? `?year=${year}` : ''), { responseType: 'blob' });
+export const downloadAdminVolunteerPdf = (userId, year = null, filterType = null) => {
+  const params = [];
+  if (year) params.push(`year=${year}`);
+  if (filterType) params.push(`filter_type=${filterType}`);
+  const q = params.length > 0 ? `?${params.join('&')}` : '';
+  return api.get(`/reports/admin/volunteer/${userId}/pdf${q}`, { responseType: 'blob' });
+};
 export const getChecklist = () => api.get('/checklist');
 export const createChecklistTask = (data) => api.post('/checklist', data);
 export const updateChecklistTask = (taskId, data) => api.put(`/checklist/${taskId}`, data);

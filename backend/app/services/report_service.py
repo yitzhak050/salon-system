@@ -158,12 +158,22 @@ async def get_all_users_yearly_stats(db: AsyncSession, year: Optional[int] = Non
     # Round hours
     return {uid: round(hours, 1) for uid, hours in user_hours.items()}
 
-async def get_volunteer_attendance_report(db: AsyncSession, user_id: uuid.UUID, year: Optional[int] = None) -> VolunteerAttendanceReport:
+async def get_volunteer_attendance_report(
+    db: AsyncSession,
+    user_id: uuid.UUID,
+    year: Optional[int] = None,
+    filter_type: Optional[str] = None
+) -> VolunteerAttendanceReport:
     """
-    Generates a full attendance report with detailed records for every shift assigned in the given year.
+    Generates an attendance report with detailed records for every shift assigned.
+    Supports filter_type:
+      - 'month': last month (from 30 days ago until today)
+      - 'year': last year (from 365 days ago until today)
+      - 'all': all shifts ever
+      - or fallback to specific calendar year if filter_type is None.
     """
-    if year is None:
-        year = datetime.date.today().year
+    now_dt = now_il_naive()
+    today_date = now_dt.date()
 
     user_res = await db.execute(select(User).filter(User.id == str(user_id)))
     user = user_res.scalars().first()
@@ -171,12 +181,29 @@ async def get_volunteer_attendance_report(db: AsyncSession, user_id: uuid.UUID, 
     stmt = (
         select(ShiftAssignment, Shift)
         .join(Shift, ShiftAssignment.shift_id == Shift.id)
-        .filter(
-            ShiftAssignment.user_id == str(user_id),
-            func.extract('year', Shift.date) == year
-        )
-        .order_by(Shift.date.asc(), Shift.slot.asc())
+        .filter(ShiftAssignment.user_id == str(user_id))
     )
+
+    period_label = f"שנת {year or today_date.year}"
+    report_year = year or today_date.year
+    if filter_type == "month":
+        start_date = today_date - datetime.timedelta(days=30)
+        stmt = stmt.filter(Shift.date >= start_date, Shift.date <= today_date)
+        period_label = f"חודש אחרון ({start_date.strftime('%d.%m.%Y')} - {today_date.strftime('%d.%m.%Y')})"
+    elif filter_type == "year":
+        start_date = today_date - datetime.timedelta(days=365)
+        stmt = stmt.filter(Shift.date >= start_date, Shift.date <= today_date)
+        period_label = f"שנה אחרונה ({start_date.strftime('%d.%m.%Y')} - {today_date.strftime('%d.%m.%Y')})"
+    elif filter_type == "all":
+        period_label = "כל המשמרות (מכל הזמנים)"
+    else:
+        if year is None:
+            year = today_date.year
+        stmt = stmt.filter(func.extract('year', Shift.date) == year)
+        period_label = f"שנת {year}"
+        report_year = year
+
+    stmt = stmt.order_by(Shift.date.asc(), Shift.slot.asc())
     res = await db.execute(stmt)
     rows = res.all()
 
@@ -226,7 +253,8 @@ async def get_volunteer_attendance_report(db: AsyncSession, user_id: uuid.UUID, 
     return VolunteerAttendanceReport(
         user_id=str(user_id),
         user_name=user.name if user else "מתנדב",
-        year=year,
+        year=report_year,
+        period_label=period_label,
         total_hours=round(total_hours, 1),
         shift_count=len([r for r in records if r.hours_logged > 0]),
         records=records

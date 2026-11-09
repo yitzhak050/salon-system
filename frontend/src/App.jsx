@@ -67,25 +67,54 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 const Layout = ({ children }) => {
   const { user } = useContext(AuthContext);
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f8fafc' }}>
-      {user && <Navbar />}
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          p: { xs: 1.5, sm: 3 },
-          mt: { xs: 7, sm: 8 },
-          mr: { xs: 0, md: user ? '240px' : 0 },
-          width: { xs: '100%', md: user ? 'calc(100% - 240px)' : '100%' },
-          transition: 'margin-right 0.2s',
-          boxSizing: 'border-box'
-        }}
-      >
-        <ErrorBoundary>
-          {children}
-        </ErrorBoundary>
+    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f8fafc', flexDirection: 'column' }}>
+      <Box sx={{ display: 'flex', flexGrow: 1 }}>
+        {user && <Navbar />}
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            p: { xs: 1.5, sm: 3 },
+            mt: { xs: 7, sm: 8 },
+            mr: { xs: 0, md: user ? '240px' : 0 },
+            width: { xs: '100%', md: user ? 'calc(100% - 240px)' : '100%' },
+            transition: 'margin-right 0.2s',
+            boxSizing: 'border-box',
+            display: 'flex',
+            flexDirection: 'column'
+          }}
+        >
+          <ErrorBoundary>
+            <Box sx={{ flexGrow: 1 }}>
+              {children}
+            </Box>
+          </ErrorBoundary>
+
+          {/* Footer present on all system screens */}
+          <Box
+            component="footer"
+            className="no-print"
+            sx={{
+              py: 2.5,
+              mt: 'auto',
+              textAlign: 'center',
+              borderTop: '1px solid #e2e8f0',
+              bgcolor: 'transparent'
+            }}
+          >
+            <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.9rem' }}>
+              נבנה ליוצאים לשינוי על ידי{' '}
+              <a
+                href="mailto:Yitzchak.gross@gmail.com"
+                style={{ color: '#1976d2', textDecoration: 'none', fontWeight: 600 }}
+              >
+                יצחק גרוס
+              </a>
+            </Typography>
+          </Box>
+        </Box>
+        {user && <Sidebar />}
       </Box>
-      {user && <Sidebar />}
     </Box>
   );
 };

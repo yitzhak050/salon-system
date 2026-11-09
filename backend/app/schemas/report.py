@@ -30,7 +30,8 @@ class AttendanceShiftItem(BaseModel):
 class VolunteerAttendanceReport(BaseModel):
     user_id: str
     user_name: str
-    year: int
+    year: Optional[int] = None
+    period_label: Optional[str] = None
     total_hours: float
     shift_count: int
     records: List[AttendanceShiftItem]

@@ -24,6 +24,7 @@ import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
 import PeopleIcon from '@mui/icons-material/People';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import ShiftCalendar from '../components/Calendar/ShiftCalendar';
 import HoursProgress from '../components/ProgressBar/HoursProgress';
 import { formatHebrewDate, shiftSlotLabel } from '../utils/dateUtils';
@@ -54,10 +55,15 @@ const VolunteerPortal = () => {
   });
   const [isEditingGoal, setIsEditingGoal] = useState(false);
   const [tempGoal, setTempGoal] = useState(goalHours);
+  const [resetStartDate, setResetStartDate] = useState(() => {
+    return localStorage.getItem(`volunteer_goal_start_date_${user?.user_id}`) || null;
+  });
+  const [resetDialogOpen, setResetDialogOpen] = useState(false);
 
   // Attendance Report PDF Modal state
   const [attendanceModalOpen, setAttendanceModalOpen] = useState(false);
   const [attendanceReport, setAttendanceReport] = useState(null);
+  const [attendanceFilter, setAttendanceFilter] = useState('year');
   const [loadingAttendance, setLoadingAttendance] = useState(false);
 
   // Partial hours in regular shift modal
@@ -85,16 +91,39 @@ const VolunteerPortal = () => {
 
   const fetchVolunteerData = async () => {
     try {
-      const [shiftsRes, statsRes] = await Promise.all([
+      const savedStartDate = localStorage.getItem(`volunteer_goal_start_date_${user?.user_id}`);
+      const [shiftsRes, statsRes, attendanceRes] = await Promise.all([
         api.getShifts(viewMonth, viewYear),
-        api.getVolunteerStats(viewYear)
+        api.getVolunteerStats(viewYear),
+        api.getVolunteerAttendanceReport(viewYear).catch(() => ({ data: null }))
       ]);
       setShifts(shiftsRes.data || []);
-      setStats(statsRes.data || { total_hours: 0 });
+
+      if (savedStartDate && attendanceRes?.data?.records) {
+        // Calculate hours accumulated since the reset start date
+        const filteredHours = attendanceRes.data.records
+          .filter(r => r.date >= savedStartDate && r.hours_logged > 0)
+          .reduce((sum, r) => sum + r.hours_logged, 0);
+        setStats({
+          ...(statsRes.data || {}),
+          total_hours: Math.round(filteredHours * 10) / 10
+        });
+      } else {
+        setStats(statsRes.data || { total_hours: 0 });
+      }
     } catch (e) {
       console.error(e);
       showNotification('שגיאה בטעינת נתונים', 'error');
     }
+  };
+
+  const handleResetCounter = () => {
+    const todayStr = new Date().toISOString().split('T')[0];
+    localStorage.setItem(`volunteer_goal_start_date_${user?.user_id}`, todayStr);
+    setResetStartDate(todayStr);
+    setResetDialogOpen(false);
+    showNotification('המונה אופס בהצלחה! ספירת השעות מתחילה מחדש מהיום עבור היעד שהוגדר.');
+    fetchVolunteerData();
   };
 
   useEffect(() => {
@@ -231,11 +260,10 @@ const VolunteerPortal = () => {
     }
   };
 
-  const handleOpenAttendanceReport = async () => {
-    setAttendanceModalOpen(true);
+  const fetchAttendanceData = async (filterType) => {
     setLoadingAttendance(true);
     try {
-      const res = await api.getVolunteerAttendanceReport(currentYear);
+      const res = await api.getVolunteerAttendanceReport(null, filterType);
       setAttendanceReport(res.data);
     } catch (e) {
       console.error(e);
@@ -245,24 +273,26 @@ const VolunteerPortal = () => {
     }
   };
 
+  const handleOpenAttendanceReport = async (filterType = 'year') => {
+    setAttendanceFilter(filterType);
+    setAttendanceModalOpen(true);
+    await fetchAttendanceData(filterType);
+  };
+
+  const handleFilterChange = async (newFilter) => {
+    if (!newFilter || newFilter === attendanceFilter) return;
+    setAttendanceFilter(newFilter);
+    await fetchAttendanceData(newFilter);
+  };
+
   const handlePrintAttendanceReport = () => {
     window.print();
   };
 
-  const handleDownloadPdfFile = async () => {
-    try {
-      const res = await api.downloadVolunteerPdf(currentYear);
-      const url = window.URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `volunteer-attendance-${currentYear}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      showNotification('דוח נוכחות PDF הורד בהצלחה!');
-    } catch (e) {
-      console.error(e);
-      showNotification('שגיאה בהורדת קובץ PDF', 'error');
-    }
+  const handleDownloadPdfFile = () => {
+    // Uses the browser print dialog where user can choose 'Save as PDF' 
+    // guaranteeing 100% exact match to the screen template and crisp Hebrew fonts!
+    window.print();
   };
 
   // My monthly shifts count and commitments
@@ -527,12 +557,26 @@ const VolunteerPortal = () => {
           <Card sx={{ height: '100%', borderRadius: 2, boxShadow: 2 }}>
             <CardContent>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                <Typography variant="h6" fontWeight="bold">השעות שלי השנה ({currentYear})</Typography>
-                <Tooltip title="ערוך יעד שעות שנתי">
-                  <IconButton size="small" onClick={() => { setTempGoal(goalHours); setIsEditingGoal(true); }}>
-                    <EditIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
+                <Box>
+                  <Typography variant="h6" fontWeight="bold">מונה שעות ויעד</Typography>
+                  {resetStartDate && (
+                    <Typography variant="caption" color="text.secondary">
+                      סופר מ-{formatHebrewDate(resetStartDate)}
+                    </Typography>
+                  )}
+                </Box>
+                <Box sx={{ display: 'flex', gap: 0.5 }}>
+                  <Tooltip title="איפוס מונה שעות ליעד חדש">
+                    <IconButton size="small" color="warning" onClick={() => setResetDialogOpen(true)}>
+                      <RestartAltIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="ערוך יעד שעות">
+                    <IconButton size="small" onClick={() => { setTempGoal(goalHours); setIsEditingGoal(true); }}>
+                      <EditIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                </Box>
               </Box>
 
               <HoursProgress totalHours={stats.total_hours || 0} goalHours={goalHours} periodLabel="שנתי" />
@@ -540,7 +584,7 @@ const VolunteerPortal = () => {
               <Divider sx={{ my: 2 }} />
 
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography variant="body2" color="text.secondary">יעד שעות שנתי:</Typography>
+                <Typography variant="body2" color="text.secondary">יעד שעות:</Typography>
                 <Typography variant="body1" fontWeight="bold">{goalHours} שעות</Typography>
               </Box>
 
@@ -637,6 +681,41 @@ const VolunteerPortal = () => {
           </Card>
         </Grid>
       </Grid>
+
+            {/* דיאלוג אזהרה לאיפוס מונה שעות */}
+      <Dialog
+        open={resetDialogOpen}
+        onClose={() => setResetDialogOpen(false)}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle fontWeight="bold" sx={{ color: 'warning.dark', display: 'flex', alignItems: 'center', gap: 1 }}>
+          <WarningAmberIcon color="warning" />
+          אזהרת איפוס מונה שעות
+        </DialogTitle>
+        <DialogContent>
+          <Typography variant="body1" sx={{ mb: 2, fontWeight: 500 }}>
+            האם אתה בטוח שברצונך לאפס את מונה השעות?
+          </Typography>
+          <Alert severity="warning" sx={{ mb: 2 }}>
+            שים לב: לחיצה על איפוס המונה מתחילה מחדש ספירה עבור שנה חדשה או יעד חדש (ממועד זה והלאה).
+          </Alert>
+          <Typography variant="body2" color="text.secondary">
+            כל שעות העבר והמשמרות נשמרות בהיסטוריה ובדוחות הנוכחות ואינן נמחקות. המונה במסך הראשי בלבד יתחיל ספירה מ-0 עבור היעד שלך.
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ p: 2, justifyContent: 'space-between' }}>
+          <Button onClick={() => setResetDialogOpen(false)}>ביטול</Button>
+          <Button
+            variant="contained"
+            color="warning"
+            startIcon={<RestartAltIcon />}
+            onClick={handleResetCounter}
+          >
+            אפס מונה והתחל יעד חדש
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {/* דיאלוג עריכת יעד שעות אישי */}
       <Dialog open={isEditingGoal} onClose={() => setIsEditingGoal(false)} maxWidth="xs" fullWidth>
@@ -909,24 +988,63 @@ const VolunteerPortal = () => {
             }
           }
         `}</style>
-        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pb: 1 }} className="no-print">
+        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pb: 1, flexWrap: 'wrap', gap: 1.5 }} className="no-print">
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <PictureAsPdfIcon color="error" />
-            <Typography variant="h6" fontWeight="bold">דוח נוכחות והתנדבות שנתי ({currentYear})</Typography>
+            <Box>
+              <Typography variant="h6" fontWeight="bold">דוח נוכחות והתנדבות רשמי</Typography>
+              <Typography variant="caption" color="text.secondary">
+                {attendanceFilter === 'month' ? 'סינון: חודש אחרון' : (attendanceFilter === 'year' ? 'סינון: שנה אחרונה (365 יום)' : 'סינון: כל המשמרות מכל הזמנים')}
+              </Typography>
+            </Box>
           </Box>
-          <Stack direction="row" spacing={1}>
+          <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
+            {/* Filter buttons: חודש אחרון / שנה אחרונה / הכל */}
+            <Box sx={{ display: 'flex', bgcolor: '#f0f4f8', borderRadius: 2, p: 0.4 }}>
+              <Button
+                size="small"
+                variant={attendanceFilter === 'month' ? 'contained' : 'text'}
+                color={attendanceFilter === 'month' ? 'primary' : 'inherit'}
+                onClick={() => handleFilterChange('month')}
+                sx={{ px: 1.5, py: 0.5, borderRadius: 1.5, fontWeight: attendanceFilter === 'month' ? 'bold' : 'normal' }}
+              >
+                חודש אחרון
+              </Button>
+              <Button
+                size="small"
+                variant={attendanceFilter === 'year' ? 'contained' : 'text'}
+                color={attendanceFilter === 'year' ? 'primary' : 'inherit'}
+                onClick={() => handleFilterChange('year')}
+                sx={{ px: 1.5, py: 0.5, borderRadius: 1.5, fontWeight: attendanceFilter === 'year' ? 'bold' : 'normal' }}
+              >
+                שנה אחרונה
+              </Button>
+              <Button
+                size="small"
+                variant={attendanceFilter === 'all' ? 'contained' : 'text'}
+                color={attendanceFilter === 'all' ? 'primary' : 'inherit'}
+                onClick={() => handleFilterChange('all')}
+                sx={{ px: 1.5, py: 0.5, borderRadius: 1.5, fontWeight: attendanceFilter === 'all' ? 'bold' : 'normal' }}
+              >
+                הכל
+              </Button>
+            </Box>
+
             <Button
               variant="contained"
               color="primary"
               startIcon={<PrintIcon />}
               onClick={handlePrintAttendanceReport}
+              sx={{ fontWeight: 'bold' }}
             >
               הדפס / שמור כ-PDF
             </Button>
             <Button
               variant="outlined"
+              color="secondary"
               startIcon={<FileDownloadIcon />}
               onClick={handleDownloadPdfFile}
+              sx={{ fontWeight: 'bold' }}
             >
               הורד PDF
             </Button>
@@ -947,7 +1065,7 @@ const VolunteerPortal = () => {
                   סלון קהילתי - דוח נוכחות ופעילות רשמי
                 </Typography>
                 <Typography variant="subtitle1" color="text.secondary">
-                  תקופת הדוח: שנת {currentYear} | תאריך הפקה: {new Date().toLocaleDateString('he-IL')}
+                  תקופת הדוח: {attendanceReport?.period_label || (attendanceFilter === 'month' ? 'חודש אחרון' : (attendanceFilter === 'year' ? 'שנה אחרונה' : 'כל המשמרות'))} | תאריך הפקה: {new Date().toLocaleDateString('he-IL')}
                 </Typography>
               </Box>
 
@@ -969,7 +1087,7 @@ const VolunteerPortal = () => {
                       <strong>סה"כ משמרות שהושלמו:</strong> {attendanceReport?.shift_count || 0} משמרות
                     </Typography>
                     <Typography variant="body1" sx={{ mt: 0.5 }}>
-                      <strong>יעד שעות שנתי:</strong> {goalHours} שעות ({Math.min(100, Math.round(((attendanceReport?.total_hours || stats.total_hours || 0) / goalHours) * 100))}% עמידה ביעד)
+                      <strong>יעד שעות:</strong> {goalHours} שעות ({Math.min(100, Math.round(((attendanceReport?.total_hours || stats.total_hours || 0) / goalHours) * 100))}% עמידה ביעד)
                     </Typography>
                   </Paper>
                 </Grid>
@@ -977,7 +1095,7 @@ const VolunteerPortal = () => {
 
               {/* Table */}
               <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1.5 }}>
-                פירוט כל המשמרות והשעות שבוצעו לשנת {currentYear}:
+                פירוט כל המשמרות והשעות שבוצעו ({attendanceReport?.period_label || (attendanceFilter === 'month' ? 'חודש אחרון' : (attendanceFilter === 'year' ? 'שנה אחרונה' : 'כל המשמרות'))}):
               </Typography>
 
               <Table size="small" sx={{ border: '1px solid #e0e0e0', mb: 3 }}>
@@ -997,7 +1115,7 @@ const VolunteerPortal = () => {
                   {(!attendanceReport?.records || attendanceReport.records.length === 0) ? (
                     <TableRow>
                       <TableCell colSpan={8} align="center" sx={{ py: 3, color: 'text.secondary' }}>
-                        אין עדיין רשומות נוכחות לשנת {currentYear}
+                        אין רשומות נוכחות לתקופה שנבחרה
                       </TableCell>
                     </TableRow>
                   ) : (

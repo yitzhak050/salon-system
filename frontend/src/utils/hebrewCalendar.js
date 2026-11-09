@@ -199,11 +199,100 @@ const JEWISH_HOLIDAYS_MAP = {
  * @param {number} day - 1-31
  * @returns {string|null}
  */
+
+/**
+ * Dynamic calculation of Hebrew holidays using native Intl.DateTimeFormat (he-u-ca-hebrew).
+ * Works dynamically for ANY year (2024, 2028, 2030, 2050...) forever without hardcoding.
+ */
+function getDynamicHebrewHoliday(date) {
+  try {
+    const formatter = new Intl.DateTimeFormat('he-u-ca-hebrew', { day: 'numeric', month: 'numeric' });
+    const parts = formatter.formatToParts(date);
+    const day = parseInt(parts.find(p => p.type === 'day')?.value, 10);
+    const month = parts.find(p => p.type === 'month')?.value;
+    if (!day || !month) return null;
+
+    const dayOfWeek = date.getDay(); // 0 = Sunday, 5 = Friday, 6 = Saturday
+
+    if (month === 'תשרי') {
+      if (day === 1) return 'ראש השנה א׳';
+      if (day === 2) return 'ראש השנה ב׳';
+      if (day === 3 && dayOfWeek !== 6) return 'צום גדליה';
+      if (day === 4 && dayOfWeek === 0) return 'צום גדליה';
+      if (day === 9) return 'ערב יום כיפור';
+      if (day === 10) return 'יום כיפור';
+      if (day === 14) return 'ערב סוכות';
+      if (day === 15) return 'סוכות א׳';
+      if (day >= 16 && day <= 20) return 'חול המועד סוכות';
+      if (day === 21) return 'הושענא רבה';
+      if (day === 22) return 'שמחת תורה';
+    }
+    if (month === 'כסלו') {
+      if (day === 24) return 'ערב חנוכה';
+      if (day === 25) return 'חנוכה נר 1';
+      if (day >= 26) return 'חנוכה';
+    }
+    if (month === 'טבת') {
+      if (day <= 2) return 'חנוכה';
+      if (day === 3) return 'חנוכה - זאת חנוכה';
+      if (day === 10) return 'צום עשרה בטבת';
+    }
+    if (month === 'שבט') {
+      if (day === 15) return 'ט״ו בשבט';
+    }
+    if (month === 'אדר' || month === 'אדר ב׳') {
+      if (day === 13 && dayOfWeek !== 6) return 'תענית אסתר';
+      if (day === 11 && dayOfWeek === 4) return 'תענית אסתר'; // When 13 is Shabbat, fast is moved to Thursday 11
+      if (day === 14) return 'פורים';
+      if (day === 15) return 'שושן פורים';
+    }
+    if (month === 'אדר א׳') {
+      if (day === 14) return 'פורים קטן';
+      if (day === 15) return 'שושן פורים קטן';
+    }
+    if (month === 'ניסן') {
+      if (day === 14) return 'ערב פסח';
+      if (day === 15) return 'פסח א׳';
+      if (day >= 16 && day <= 20) return 'חול המועד פסח';
+      if (day === 21) return 'שביעי של פסח';
+      if (day === 27 && dayOfWeek !== 5 && dayOfWeek !== 0) return 'יום השואה';
+      if (day === 26 && dayOfWeek === 4) return 'יום השואה';
+      if (day === 28 && dayOfWeek === 1) return 'יום השואה';
+    }
+    if (month === 'אייר') {
+      if (day === 4 && (dayOfWeek === 2 || dayOfWeek === 3)) return 'יום הזיכרון';
+      if (day === 5 && (dayOfWeek === 3 || dayOfWeek === 4)) return 'יום העצמאות';
+      if (day === 3 && dayOfWeek === 3) return 'יום הזיכרון';
+      if (day === 4 && dayOfWeek === 4) return 'יום העצמאות';
+      if (day === 18) return 'ל״ג בעומר';
+      if (day === 28) return 'יום ירושלים';
+    }
+    if (month === 'סיוון') {
+      if (day === 5) return 'ערב שבועות';
+      if (day === 6) return 'חג שבועות';
+    }
+    if (month === 'תמוז') {
+      if (day === 17 && dayOfWeek !== 6) return 'שבעה עשר בתמוז';
+      if (day === 18 && dayOfWeek === 0) return 'שבעה עשר בתמוז';
+    }
+    if (month === 'אב') {
+      if (day === 9 && dayOfWeek !== 6) return 'תשעה באב';
+      if (day === 10 && dayOfWeek === 0) return 'תשעה באב';
+      if (day === 15) return 'ט״ו באב';
+    }
+    return null;
+  } catch (e) {
+    return null;
+  }
+}
+
 export const getJewishHoliday = (year, month, day) => {
   const m = String(month).padStart(2, '0');
   const d = String(day).padStart(2, '0');
   const key = `${year}-${m}-${d}`;
-  return JEWISH_HOLIDAYS_MAP[key] || null;
+  if (JEWISH_HOLIDAYS_MAP[key]) return JEWISH_HOLIDAYS_MAP[key];
+  const date = new Date(year, month - 1, day);
+  return getDynamicHebrewHoliday(date);
 };
 
 /**

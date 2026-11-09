@@ -147,7 +147,7 @@ const ReportsPage = () => {
             <FormControl fullWidth size="small">
               <InputLabel>שנה</InputLabel>
               <Select value={year} label="שנה" onChange={(e) => setYear(e.target.value)}>
-                {[currentDate.getFullYear() - 1, currentDate.getFullYear(), currentDate.getFullYear() + 1].map(y => (
+                {Array.from({ length: 11 }, (_, i) => currentDate.getFullYear() - 2 + i).map(y => (
                   <MenuItem key={y} value={y}>{y}</MenuItem>
                 ))}
               </Select>

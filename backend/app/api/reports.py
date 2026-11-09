@@ -25,18 +25,20 @@ async def volunteer_stats_route(
 @router.get("/volunteer/attendance", response_model=VolunteerAttendanceReport)
 async def volunteer_attendance_route(
     year: Optional[int] = Query(None, description="Year for attendance report"),
+    filter_type: Optional[str] = Query(None, description="Filter type: month, year, all"),
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    return await get_volunteer_attendance_report(db, current_user.id, year=year)
+    return await get_volunteer_attendance_report(db, current_user.id, year=year, filter_type=filter_type)
 
 @router.get("/volunteer/pdf")
 async def volunteer_pdf_route(
     year: Optional[int] = Query(None, description="Year for report"),
+    filter_type: Optional[str] = Query(None, description="Filter type: month, year, all"),
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    report = await get_volunteer_attendance_report(db, current_user.id, year=year)
+    report = await get_volunteer_attendance_report(db, current_user.id, year=year, filter_type=filter_type)
     pdf_bytes = export_volunteer_pdf(report)
     return Response(
         content=pdf_bytes,
@@ -62,10 +64,11 @@ async def admin_yearly_stats_route(year: Optional[int] = Query(None), db: AsyncS
 async def admin_volunteer_pdf_route(
     user_id: str,
     year: Optional[int] = Query(None),
+    filter_type: Optional[str] = Query(None),
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(require_manager)
 ):
-    report = await get_volunteer_attendance_report(db, user_id, year=year)
+    report = await get_volunteer_attendance_report(db, user_id, year=year, filter_type=filter_type)
     pdf_bytes = export_volunteer_pdf(report)
     return Response(
         content=pdf_bytes,
