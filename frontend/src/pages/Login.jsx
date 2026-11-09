@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   Container, Paper, Typography, TextField, Button, Box, Alert,
   IconButton, InputAdornment, Dialog, DialogTitle, DialogContent,
-  DialogContentText, DialogActions
+  DialogContentText, DialogActions, FormControlLabel, Checkbox
 } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
@@ -11,6 +11,7 @@ import * as api from '../services/api';
 const Login = ({ onLogin }) => {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -22,7 +23,7 @@ const Login = ({ onLogin }) => {
     setLoading(true);
     try {
       const res = await api.login(phone, password);
-      onLogin(res.data.access_token);
+      onLogin(res.data.access_token, rememberMe);
     } catch (err) {
       setError('פרטי התחברות שגויים');
     } finally {
@@ -75,11 +76,22 @@ const Login = ({ onLogin }) => {
               )
             }}
           />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                color="primary"
+              />
+            }
+            label="השאר אותי מחובר לחודש (30 יום)"
+            sx={{ mt: 0.5 }}
+          />
           <Button
             type="submit"
             fullWidth
             variant="contained"
-            sx={{ mt: 3, mb: 1.5 }}
+            sx={{ mt: 2, mb: 1.5 }}
             disabled={loading}
           >
             התחבר

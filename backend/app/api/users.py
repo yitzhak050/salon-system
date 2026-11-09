@@ -40,7 +40,7 @@ async def update_my_profile_route(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    return await update_user_profile(db, current_user, data.email, data.name)
+    return await update_user_profile(db, current_user, data.email, data.name, data.notifications_enabled)
 
 
 @router.post("/me/verify-password")

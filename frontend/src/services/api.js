@@ -6,12 +6,49 @@ const baseURL = import.meta.env.VITE_API_BASE_URL
   ? import.meta.env.VITE_API_BASE_URL.replace(/\/+$/, '')
   : '/api';
 
+const THIRTY_DAYS_SECONDS = 30 * 24 * 60 * 60; // 2,592,000 seconds (30 days)
+
+export function getCookieToken() {
+  if (typeof document === 'undefined') return null;
+  const match = document.cookie.match(/(?:^|;\s*)salon_token=([^;]*)/);
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
+export function getStoredToken() {
+  const local = localStorage.getItem('token');
+  if (local) return local;
+  const cookieToken = getCookieToken();
+  if (cookieToken) {
+    localStorage.setItem('token', cookieToken);
+    return cookieToken;
+  }
+  return null;
+}
+
+export function saveAuthToken(token, rememberForMonth = true) {
+  localStorage.setItem('token', token);
+  if (typeof document !== 'undefined') {
+    if (rememberForMonth) {
+      document.cookie = `salon_token=${encodeURIComponent(token)}; max-age=${THIRTY_DAYS_SECONDS}; path=/; SameSite=Lax`;
+    } else {
+      document.cookie = `salon_token=${encodeURIComponent(token)}; path=/; SameSite=Lax`;
+    }
+  }
+}
+
+export function clearAuthToken() {
+  localStorage.removeItem('token');
+  if (typeof document !== 'undefined') {
+    document.cookie = 'salon_token=; max-age=0; path=/; SameSite=Lax';
+  }
+}
+
 const api = axios.create({
   baseURL,
 });
 
 api.interceptors.request.use(config => {
-  const token = localStorage.getItem('token');
+  const token = getStoredToken();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -20,7 +57,7 @@ api.interceptors.request.use(config => {
 
 api.interceptors.response.use(response => response, error => {
   if (error.response && error.response.status === 401) {
-    localStorage.removeItem('token');
+    clearAuthToken();
     window.location.href = '/login';
   }
   return Promise.reject(error);

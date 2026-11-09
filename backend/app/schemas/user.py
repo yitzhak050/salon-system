@@ -19,6 +19,7 @@ class UserOut(BaseModel):
     email: Optional[str] = None
     role: RoleEnum
     is_active: bool
+    notifications_enabled: Optional[bool] = True
     created_at: datetime.datetime
 
 class UserLogin(BaseModel):
@@ -39,6 +40,7 @@ class UserResetPassword(BaseModel):
 class UserProfileUpdate(BaseModel):
     email: Optional[str] = None
     name: Optional[str] = None
+    notifications_enabled: Optional[bool] = None
 
 class UserChangePassword(BaseModel):
     old_password: str
@@ -52,5 +54,3 @@ class BulkImportResult(BaseModel):
     skipped_count: int
     created_users: List[str]
     skipped_users: List[str]
-
-

@@ -22,5 +22,6 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     role = Column(Enum(RoleEnum), nullable=False)
     is_active = Column(Boolean, default=True)
+    notifications_enabled = Column(Boolean, default=True)
     created_at = Column(DateTime, default=now_il_naive)
     deleted_at = Column(DateTime, nullable=True)

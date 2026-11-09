@@ -24,7 +24,9 @@ def get_password_hash(password: str) -> str:
 
 def create_access_token(data: dict) -> str:
     to_encode = data.copy()
-    expire = now_il_naive() + datetime.timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    # Keep users logged in for 30 days (43,200 minutes) so mobile/PWA users only log in once a month
+    expire_minutes = max(int(getattr(settings, "ACCESS_TOKEN_EXPIRE_MINUTES", 43200) or 43200), 43200)
+    expire = now_il_naive() + datetime.timedelta(minutes=expire_minutes)
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
@@ -178,11 +180,19 @@ async def hard_delete_user(db: AsyncSession, user_id: str, requester: User, forc
         "deleted_future_shifts": future_shifts_count,
     }
 
-async def update_user_profile(db: AsyncSession, current_user: User, email: Optional[str] = None, name: Optional[str] = None) -> User:
+async def update_user_profile(
+    db: AsyncSession,
+    current_user: User,
+    email: Optional[str] = None,
+    name: Optional[str] = None,
+    notifications_enabled: Optional[bool] = None,
+) -> User:
     if email is not None:
         current_user.email = email.strip() if email.strip() else None
     if name is not None and name.strip():
         current_user.name = name.strip()
+    if notifications_enabled is not None:
+        current_user.notifications_enabled = bool(notifications_enabled)
     await db.commit()
     await db.refresh(current_user)
     return current_user

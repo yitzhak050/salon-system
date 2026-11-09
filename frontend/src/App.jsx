@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import React, { createContext, useState, useContext } from 'react';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import Login from './pages/Login';
 import AdminDashboard from './pages/AdminDashboard';
@@ -11,9 +11,29 @@ import VolunteerTasks from './pages/VolunteerTasks';
 import UserProfile from './pages/UserProfile';
 import Navbar from './components/Layout/Navbar';
 import Sidebar from './components/Layout/Sidebar';
+import { getStoredToken, saveAuthToken, clearAuthToken } from './services/api';
 import { Box, Typography, Button, Paper } from '@mui/material';
 
 export const AuthContext = createContext(null);
+
+function decodeUserFromToken(token) {
+  if (!token) return null;
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    if (payload.exp && payload.exp * 1000 < Date.now()) {
+      clearAuthToken();
+      return null;
+    }
+    return {
+      user_id: payload.sub,
+      role: payload.role,
+      name: payload.name || 'משתמש'
+    };
+  } catch (e) {
+    clearAuthToken();
+    return null;
+  }
+}
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -122,7 +142,8 @@ const Layout = ({ children }) => {
 
 
 function App() {
-  const [user, setUser] = useState(null);
+  // Initialize synchronously from localStorage or 30-day cookie so PWA/page refresh stays logged in
+  const [user, setUser] = useState(() => decodeUserFromToken(getStoredToken()));
   const [mobileOpen, setMobileOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -130,31 +151,11 @@ function App() {
     setMobileOpen(prev => !prev);
   };
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        setUser({
-          user_id: payload.sub,
-          role: payload.role,
-          name: payload.name || 'משתמש'
-        });
-      } catch (e) {
-        localStorage.removeItem('token');
-      }
-    }
-  }, []);
-
-  const handleLogin = (token) => {
-    localStorage.setItem('token', token);
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    setUser({
-      user_id: payload.sub,
-      role: payload.role,
-      name: payload.name || 'משתמש'
-    });
-    if (payload.role === 'SALON_MANAGER') {
+  const handleLogin = (token, rememberForMonth = true) => {
+    saveAuthToken(token, rememberForMonth);
+    const decoded = decodeUserFromToken(token);
+    setUser(decoded);
+    if (decoded?.role === 'SALON_MANAGER') {
       navigate('/admin');
     } else {
       navigate('/volunteer');
@@ -162,7 +163,7 @@ function App() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    clearAuthToken();
     setUser(null);
     navigate('/login');
   };

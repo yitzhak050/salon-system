@@ -4,13 +4,19 @@ from app.db.session import get_db
 from app.schemas.notification import NotificationOut
 from app.models.user import User
 from app.dependencies import get_current_user
-from app.services.notification_service import get_notifications, mark_notification_as_read, mark_all_as_read
+from app.services.notification_service import (
+    get_notifications,
+    mark_notification_as_read,
+    mark_all_as_read,
+    check_and_create_shift_reminders,
+)
 
 router = APIRouter(prefix="/notifications", tags=["notifications"])
 
 @router.get("", response_model=list[NotificationOut])
 @router.get("/", response_model=list[NotificationOut])
 async def get_my_notifications(db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
+    await check_and_create_shift_reminders(db, current_user)
     return await get_notifications(db, current_user.id)
 
 

@@ -2,12 +2,14 @@ import React, { useState, useEffect, useContext } from 'react';
 import {
   Container, Typography, Box, Paper, TextField, Button, Grid,
   Chip, Divider, Alert, Snackbar, InputAdornment, IconButton,
-  CircularProgress, Collapse
+  CircularProgress, Collapse, Switch, FormControlLabel
 } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
 import LockIcon from '@mui/icons-material/Lock';
+import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
+import NotificationsOffIcon from '@mui/icons-material/NotificationsOff';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -21,12 +23,51 @@ const roleLabels = {
   EVENT_VOLUNTEER: 'מתנדב אירועים'
 };
 
+export async function triggerBrowserPopupNotification(title, body, tag = 'salon-notif') {
+  if (typeof window === 'undefined' || !('Notification' in window)) return false;
+  if (Notification.permission !== 'granted') return false;
+  try {
+    if ('serviceWorker' in navigator) {
+      const reg = await navigator.serviceWorker.getRegistration();
+      if (reg && reg.showNotification) {
+        await reg.showNotification(title, {
+          body,
+          icon: '/icon.svg',
+          badge: '/icon.svg',
+          dir: 'rtl',
+          lang: 'he',
+          tag,
+        });
+        return true;
+      }
+    }
+    new Notification(title, {
+      body,
+      icon: '/icon.svg',
+      dir: 'rtl',
+      lang: 'he',
+      tag,
+    });
+    return true;
+  } catch (e) {
+    console.error('Popup notification error:', e);
+    return false;
+  }
+}
+
 const UserProfile = () => {
   const { user: currentUser } = useContext(AuthContext);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [email, setEmail] = useState('');
   const [savingEmail, setSavingEmail] = useState(false);
+
+  // Notifications Toggle State (default: ON)
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [savingNotifPref, setSavingNotifPref] = useState(false);
+  const [browserPermission, setBrowserPermission] = useState(
+    typeof window !== 'undefined' && 'Notification' in window ? Notification.permission : 'unsupported'
+  );
 
   // Password Change State
   const [oldPassword, setOldPassword] = useState('');
@@ -52,6 +93,11 @@ const UserProfile = () => {
       const res = await api.getMyProfile();
       setProfile(res.data);
       setEmail(res.data?.email || '');
+      const isEnabled = res.data?.notifications_enabled !== false;
+      setNotificationsEnabled(isEnabled);
+      if (currentUser?.user_id) {
+        localStorage.setItem(`salon_notifications_enabled_${currentUser.user_id}`, isEnabled ? 'true' : 'false');
+      }
     } catch (e) {
       showNotification('שגיאה בטעינת פרטי הפרופיל', 'error');
     } finally {
@@ -62,6 +108,60 @@ const UserProfile = () => {
   useEffect(() => {
     fetchProfile();
   }, []);
+
+  const handleToggleNotifications = async (e) => {
+    const checked = e.target.checked;
+    setNotificationsEnabled(checked);
+    setSavingNotifPref(true);
+    try {
+      const res = await api.updateMyProfile({ notifications_enabled: checked });
+      setProfile(res.data);
+      if (currentUser?.user_id) {
+        localStorage.setItem(`salon_notifications_enabled_${currentUser.user_id}`, checked ? 'true' : 'false');
+      }
+      window.dispatchEvent(new CustomEvent('salon-notifications-pref-changed', { detail: checked }));
+
+      if (checked && typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'default') {
+        const perm = await Notification.requestPermission();
+        setBrowserPermission(perm);
+      }
+
+      showNotification(
+        checked
+          ? 'התראות ותזכורות משמרת הופעלו בהצלחה!'
+          : 'התראות ותזכורות משמרת כובו (הושתקו).'
+      );
+    } catch (err) {
+      setNotificationsEnabled(!checked);
+      showNotification('שגיאה בעדכון הגדרות התראות', 'error');
+    } finally {
+      setSavingNotifPref(false);
+    }
+  };
+
+  const handleTestPopupNotification = async () => {
+    if (typeof window === 'undefined' || !('Notification' in window)) {
+      showNotification('הדפדפן שלך אינו תומך בהתראות קופצות', 'warning');
+      return;
+    }
+    let perm = Notification.permission;
+    if (perm === 'default') {
+      perm = await Notification.requestPermission();
+      setBrowserPermission(perm);
+    }
+    if (perm !== 'granted') {
+      showNotification('יש לאשר הצגת התראות בהגדרות הדפדפן (סמל המנעול בשורת הכתובת)', 'warning');
+      return;
+    }
+    const ok = await triggerBrowserPopupNotification(
+      'סלון קהילתי - בדיקת התראה 📅',
+      'מעולה! התראות קופצות על משמרות פעילות במכשיר זה.',
+      'salon-test-' + Date.now()
+    );
+    if (ok) {
+      showNotification('התראת בדיקה נשלחה למכשיר שלך!');
+    }
+  };
 
   const handleSaveEmail = async (e) => {
     e.preventDefault();
@@ -94,7 +194,6 @@ const UserProfile = () => {
     }
   };
 
-  // השורות של הסיסמה החדשה נפתחות ברגע שמקלידים סיסמה ישנה (או מאמתים אותה)
   const showNewPasswordFields = oldPassword.trim().length > 0 || oldPasswordVerified;
   const passwordsMatch = newPassword.length > 0 && newPassword === confirmPassword;
   const passwordsMismatch = confirmPassword.length > 0 && newPassword !== confirmPassword;
@@ -146,12 +245,84 @@ const UserProfile = () => {
             פרופיל אישי
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            צפייה בפרטים אישיים, עדכון כתובת אימייל ושינוי סיסמה
+            צפייה בפרטים אישיים, הגדרות התראות קופצות, עדכון אימייל ושינוי סיסמה
           </Typography>
         </Box>
       </Box>
 
       <Grid container spacing={3}>
+        {/* כרטיס הגדרות התראות ותזכורות - בראש העמוד */}
+        <Grid item xs={12}>
+          <Paper
+            sx={{
+              p: 3,
+              borderRadius: 2,
+              boxShadow: 2,
+              border: '1px solid',
+              borderColor: notificationsEnabled ? '#c8e6c9' : '#e0e0e0',
+              bgcolor: notificationsEnabled ? '#f9fbe7' : '#fafafa',
+            }}
+          >
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                {notificationsEnabled ? (
+                  <NotificationsActiveIcon color="success" sx={{ fontSize: 32 }} />
+                ) : (
+                  <NotificationsOffIcon color="disabled" sx={{ fontSize: 32 }} />
+                )}
+                <Box>
+                  <Typography variant="h6" fontWeight="bold">
+                    התראות קופצות ותזכורות משמרת
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    קבלת התראה קופצת בנייד/במחשב: <strong>יום לפני משמרת</strong>, <strong>שעה לפני משמרת</strong>, ובעת <strong>פתיחת חודש חדש</strong> (תזכורת לשיבוץ לפחות 2 משמרות בחודש).
+                  </Typography>
+                </Box>
+              </Box>
+
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={notificationsEnabled}
+                    onChange={handleToggleNotifications}
+                    disabled={savingNotifPref}
+                    color="success"
+                  />
+                }
+                label={
+                  <Typography fontWeight="bold" color={notificationsEnabled ? 'success.dark' : 'text.secondary'}>
+                    {notificationsEnabled ? 'התראות פעילות (דלוק)' : 'התראות מושתקות (כבוי)'}
+                  </Typography>
+                }
+              />
+            </Box>
+
+            {notificationsEnabled && (
+              <Box sx={{ mt: 2, pt: 2, borderTop: '1px dashed #dcedc8', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1.5 }}>
+                <Typography variant="caption" color="text.secondary">
+                  סטטוס הרשאת דפדפן/מכשיר:{' '}
+                  <strong>
+                    {browserPermission === 'granted'
+                      ? 'מאושר ✓ (התראות יקפצו במכשיר)'
+                      : browserPermission === 'denied'
+                      ? 'חסום בדפדפן (ניתן לאפשר דרך סמל המנעול בשורת הכתובת)'
+                      : 'ממתין לאישור בלחיצה על הכפתור משמאל'}
+                  </strong>
+                </Typography>
+                <Button
+                  size="small"
+                  variant="outlined"
+                  color="primary"
+                  startIcon={<NotificationsActiveIcon />}
+                  onClick={handleTestPopupNotification}
+                >
+                  {browserPermission === 'granted' ? 'שלח התראה קופצת לבדיקה' : 'אשר התראות בדפדפן ובדוק'}
+                </Button>
+              </Box>
+            )}
+          </Paper>
+        </Grid>
+
         {/* כרטיס פרטים אישיים ואימייל */}
         <Grid item xs={12} md={6}>
           <Paper sx={{ p: 3, borderRadius: 2, boxShadow: 2, height: '100%' }}>
