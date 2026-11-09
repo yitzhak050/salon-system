@@ -65,5 +65,11 @@ class BatchAssignRequest(BaseModel):
     shift_ids: list[str] = Field(validation_alias=AliasChoices('shift_ids', 'shiftIds'))
     user_id: str = Field(validation_alias=AliasChoices('user_id', 'userId'))
 
+class UpdateAssignmentRequest(BaseModel):
+    hours_logged: Optional[float] = None
+    notes: Optional[str] = None
+    clock_in: Optional[datetime.datetime] = None
+    clock_out: Optional[datetime.datetime] = None
+
 
 

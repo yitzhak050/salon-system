@@ -1,4 +1,4 @@
-from sqlalchemy.ext.asyncio import AsyncSession
+﻿from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import func
 import datetime
@@ -10,7 +10,7 @@ from app.utils.timezone import now_il_naive
 from app.models.shift import Shift, ShiftSlotEnum, ShiftAssignment
 from app.models.user import User, RoleEnum
 from app.services.notification_service import create_in_app_notification
-from app.schemas.shift import CreateShiftRequest, UpdateShiftRequest, CustomSignupRequest
+from app.schemas.shift import CreateShiftRequest, UpdateShiftRequest, CustomSignupRequest, UpdateAssignmentRequest
 
 SLOT_HEBREW = {
     ShiftSlotEnum.MORNING: "בוקר (10:00-14:00)",
@@ -364,4 +364,28 @@ async def batch_unassign_shifts(db: AsyncSession, shift_ids: list[str], requeste
     return count
 
 
+async def update_shift_assignment(db: AsyncSession, assignment_id: str, req: UpdateAssignmentRequest, requester: User) -> ShiftAssignment:
+    if requester.role != RoleEnum.SALON_MANAGER:
+        raise HTTPException(status_code=403, detail="Not authorized")
 
+    res = await db.execute(select(ShiftAssignment).filter(ShiftAssignment.id == str(assignment_id)))
+    assignment = res.scalars().first()
+    if not assignment:
+        raise HTTPException(status_code=404, detail="שיבוץ לא נמצא")
+
+    if req.hours_logged is not None:
+        assignment.hours_logged = round(float(req.hours_logged), 2)
+    if req.notes is not None:
+        assignment.notes = req.notes
+    if req.clock_in is not None:
+        assignment.clock_in = req.clock_in.replace(tzinfo=None)
+    if req.clock_out is not None:
+        assignment.clock_out = req.clock_out.replace(tzinfo=None)
+
+    await db.commit()
+    await db.refresh(assignment)
+
+    u_res = await db.execute(select(User.name).filter(User.id == assignment.user_id))
+    assignment.user_name = u_res.scalar_one_or_none()
+
+    return assignment

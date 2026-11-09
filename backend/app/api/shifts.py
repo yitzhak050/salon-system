@@ -1,11 +1,12 @@
-from fastapi import APIRouter, Depends
+﻿from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.utils.timezone import now_il
 from app.db.session import get_db
 from app.schemas.shift import (
     ShiftOut, MonthlyShiftsRequest, AssignRequest, ClockRequest,
     ShiftAssignmentOut, BatchShiftsRequest, CreateShiftRequest,
-    UpdateShiftRequest, CustomSignupRequest
+    UpdateShiftRequest, CustomSignupRequest,
+    UpdateAssignmentRequest
 )
 from app.models.user import User
 from app.dependencies import require_manager, get_current_user
@@ -13,7 +14,8 @@ from app.services.shift_service import (
     generate_monthly_shifts, get_shifts_for_month,
     assign_volunteer_to_shift, unassign_volunteer,
     clock_in_shift, clock_out_shift,
-    create_shift, update_shift, custom_shift_signup
+    create_shift, update_shift, custom_shift_signup,
+    update_shift_assignment
 )
 
 router = APIRouter(prefix="/shifts", tags=["shifts"])
@@ -136,3 +138,11 @@ async def batch_unassign_shifts_route(
     count = await batch_unassign_shifts(db, req.shift_ids, requester)
     return {"unassigned": count}
 
+@router.patch("/assign/{assignment_id}", response_model=ShiftAssignmentOut)
+async def update_shift_assignment_route(
+    assignment_id: str,
+    req: UpdateAssignmentRequest,
+    db: AsyncSession = Depends(get_db),
+    requester: User = Depends(require_manager)
+):
+    return await update_shift_assignment(db, assignment_id, req, requester)

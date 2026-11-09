@@ -4,8 +4,12 @@ import {
   DialogTitle, DialogContent, DialogActions, Button, Box,
   Alert, Chip, Slider, TextField, FormControlLabel, Switch,
   Snackbar, Tooltip, IconButton, Stack, Divider, Paper,
-  Table, TableBody, TableCell, TableHead, TableRow, CircularProgress
+  Table, TableBody, TableCell, TableHead, TableRow, CircularProgress,
+  MenuItem, Select, FormControl, InputLabel
 } from '@mui/material';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import TodayIcon from '@mui/icons-material/Today';
 import EditIcon from '@mui/icons-material/Edit';
 import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -36,6 +40,8 @@ const VolunteerPortal = () => {
   const { user } = useContext(AuthContext);
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
+  const [viewMonth, setViewMonth] = useState(currentDate.getMonth() + 1);
+  const [viewYear, setViewYear] = useState(currentDate.getFullYear());
   const [shifts, setShifts] = useState([]);
   const [stats, setStats] = useState({ total_hours: 0 });
   const [selectedShift, setSelectedShift] = useState(null);
@@ -79,11 +85,9 @@ const VolunteerPortal = () => {
 
   const fetchVolunteerData = async () => {
     try {
-      const month = currentDate.getMonth() + 1;
-      const year = currentDate.getFullYear();
       const [shiftsRes, statsRes] = await Promise.all([
-        api.getShifts(month, year),
-        api.getVolunteerStats(year)
+        api.getShifts(viewMonth, viewYear),
+        api.getVolunteerStats(viewYear)
       ]);
       setShifts(shiftsRes.data || []);
       setStats(statsRes.data || { total_hours: 0 });
@@ -95,7 +99,31 @@ const VolunteerPortal = () => {
 
   useEffect(() => {
     fetchVolunteerData();
-  }, []);
+  }, [viewMonth, viewYear]);
+
+  const handlePrevMonth = () => {
+    if (viewMonth === 1) {
+      setViewMonth(12);
+      setViewYear(prev => prev - 1);
+    } else {
+      setViewMonth(prev => prev - 1);
+    }
+  };
+
+  const handleNextMonth = () => {
+    if (viewMonth === 12) {
+      setViewMonth(1);
+      setViewYear(prev => prev + 1);
+    } else {
+      setViewMonth(prev => prev + 1);
+    }
+  };
+
+  const handleCurrentMonth = () => {
+    const now = new Date();
+    setViewMonth(now.getMonth() + 1);
+    setViewYear(now.getFullYear());
+  };
 
   const handleSaveGoal = () => {
     const val = Number(tempGoal);
@@ -309,10 +337,14 @@ const VolunteerPortal = () => {
             variant="outlined"
             color="secondary"
             startIcon={<WeekendIcon />}
-            onClick={() => setWeekendDialogOpen(true)}
+            onClick={() => {
+              setCustomDate(new Date().toISOString().split('T')[0]);
+              setCustomRange([22, 24]);
+              setWeekendDialogOpen(true);
+            }}
             sx={{ borderRadius: 2 }}
           >
-            התנדבות בסופ"ש / מיוחד
+            הרשמה חופשית (לילה 22-00 / סופ"ש)
           </Button>
         </Stack>
       </Box>
@@ -537,16 +569,67 @@ const VolunteerPortal = () => {
         <Grid item xs={12} md={8}>
           <Card sx={{ height: '100%', borderRadius: 2, boxShadow: 2 }}>
             <CardContent>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                <Typography variant="h6" fontWeight="bold">לוח משמרות</Typography>
-                <Typography variant="caption" color="text.secondary">
-                  לחץ על משמרת כדי להירשם או לדווח שעות
-                </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, flexWrap: 'wrap', gap: 1 }}>
+                <Box>
+                  <Typography variant="h6" fontWeight="bold">לוח משמרות</Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    לחץ על משמרת כדי להירשם או לדווח שעות
+                  </Typography>
+                </Box>
+
+                {/* חודש ודפדוף */}
+                <Stack direction="row" spacing={0.5} alignItems="center">
+                  <Tooltip title="חודש קודם">
+                    <IconButton size="small" onClick={handlePrevMonth} color="primary">
+                      <ChevronRightIcon />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="חזרה לחודש הנוכחי">
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      startIcon={<TodayIcon fontSize="small" />}
+                      onClick={handleCurrentMonth}
+                      sx={{ px: 1, py: 0.2, minWidth: 0, fontSize: '0.8rem' }}
+                    >
+                      היום
+                    </Button>
+                  </Tooltip>
+                  <Tooltip title="חודש הבא">
+                    <IconButton size="small" onClick={handleNextMonth} color="primary">
+                      <ChevronLeftIcon />
+                    </IconButton>
+                  </Tooltip>
+
+                  <FormControl size="small" sx={{ minWidth: 80, ml: 1 }}>
+                    <Select
+                      value={viewMonth}
+                      onChange={(e) => setViewMonth(Number(e.target.value))}
+                      sx={{ height: 32, fontSize: '0.85rem' }}
+                    >
+                      {['ינואר', 'פברואר', 'מרץ', 'אפריל', 'מאי', 'יוני', 'יולי', 'אוגוסט', 'ספטמבר', 'אוקטובר', 'נובמבר', 'דצמבר'].map((mName, i) => (
+                        <MenuItem key={i + 1} value={i + 1}>{mName}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                  <FormControl size="small" sx={{ minWidth: 80 }}>
+                    <Select
+                      value={viewYear}
+                      onChange={(e) => setViewYear(Number(e.target.value))}
+                      sx={{ height: 32, fontSize: '0.85rem' }}
+                    >
+                      {[currentYear - 2, currentYear - 1, currentYear, currentYear + 1, currentYear + 2].map(y => (
+                        <MenuItem key={y} value={y}>{y}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Stack>
               </Box>
+
               <ShiftCalendar
                 shifts={shifts}
-                month={currentDate.getMonth() + 1}
-                year={currentDate.getFullYear()}
+                month={viewMonth}
+                year={viewYear}
                 viewMode="volunteer"
                 onShiftClick={handleShiftClick}
               />
@@ -577,13 +660,13 @@ const VolunteerPortal = () => {
         </DialogActions>
       </Dialog>
 
-      {/* דיאלוג הרשמה לסופ"ש / שעות מיוחדות */}
+      {/* דיאלוג הרשמה לשעות מיוחדות / לילה 22:00-00:00 / סופ"ש */}
       <Dialog open={weekendDialogOpen} onClose={() => setWeekendDialogOpen(false)} maxWidth="sm" fullWidth>
         <form onSubmit={handleCustomSignup}>
-          <DialogTitle fontWeight="bold">התנדבות בסופ"ש / שעות מיוחדות</DialogTitle>
+          <DialogTitle fontWeight="bold">הרשמה להתנדבות חופשית (לילה 22-00 / סופ"ש)</DialogTitle>
           <DialogContent>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              הסלון סגור באופן רגיל בסופי שבוע, אך ניתן להירשם לכל טווח שעות שתבחר בימי שישי או שבת:
+              כאן ניתן להירשם להתנדבות גם כשאין משמרת רגילה מוגדרת – למשל שעות הלילה 22:00-00:00, סופי שבוע או הגעה מיוחדת:
             </Typography>
 
             <TextField
@@ -600,7 +683,7 @@ const VolunteerPortal = () => {
             <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
               בחירת טווח שעות: {formatHour(customRange[0])} - {formatHour(customRange[1])}
             </Typography>
-            <Box sx={{ px: 2, mb: 3 }}>
+            <Box sx={{ px: 2, mb: 2 }}>
               <Slider
                 value={customRange}
                 onChange={(e, val) => setCustomRange(val)}
@@ -614,9 +697,35 @@ const VolunteerPortal = () => {
                   { value: 6, label: '06:00' },
                   { value: 12, label: '12:00' },
                   { value: 18, label: '18:00' },
-                  { value: 24, label: '24:00' },
+                  { value: 22, label: '22:00' },
+                  { value: 24, label: '00:00' },
                 ]}
               />
+            </Box>
+
+            <Box sx={{ display: 'flex', gap: 1, mb: 3, flexWrap: 'wrap' }}>
+              <Button
+                size="small"
+                variant="outlined"
+                color="secondary"
+                onClick={() => setCustomRange([22, 24])}
+              >
+                קבע לילה (22:00 - 00:00)
+              </Button>
+              <Button
+                size="small"
+                variant="outlined"
+                onClick={() => setCustomRange([10, 14])}
+              >
+                קבע בוקר (10:00 - 14:00)
+              </Button>
+              <Button
+                size="small"
+                variant="outlined"
+                onClick={() => setCustomRange([18, 22])}
+              >
+                קבע ערב (18:00 - 22:00)
+              </Button>
             </Box>
 
             <TextField
@@ -626,13 +735,13 @@ const VolunteerPortal = () => {
               fullWidth
               value={customNotes}
               onChange={(e) => setCustomNotes(e.target.value)}
-              placeholder="למשל: הגעה לארגון ציוד / הכנת פעילות..."
+              placeholder="למשל: סגירת לילה 22:00-00:00, ארגון הסלון..."
             />
           </DialogContent>
           <DialogActions sx={{ p: 2 }}>
             <Button onClick={() => setWeekendDialogOpen(false)}>ביטול</Button>
             <Button type="submit" variant="contained" color="secondary">
-              אשר הרשמה לסופ"ש
+              אשר הרשמה
             </Button>
           </DialogActions>
         </form>

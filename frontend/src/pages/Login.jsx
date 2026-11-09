@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import {
   Container, Paper, Typography, TextField, Button, Box, Alert,
-  IconButton, InputAdornment
+  IconButton, InputAdornment, Dialog, DialogTitle, DialogContent,
+  DialogContentText, DialogActions
 } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
@@ -13,6 +14,7 @@ const Login = ({ onLogin }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -77,11 +79,21 @@ const Login = ({ onLogin }) => {
             type="submit"
             fullWidth
             variant="contained"
-            sx={{ mt: 3, mb: 2 }}
+            sx={{ mt: 3, mb: 1.5 }}
             disabled={loading}
           >
             התחבר
           </Button>
+          <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+            <Button
+              variant="text"
+              size="small"
+              onClick={() => setForgotPasswordOpen(true)}
+              sx={{ color: 'text.secondary', textTransform: 'none', '&:hover': { textDecoration: 'underline' } }}
+            >
+              שכחתי סיסמה?
+            </Button>
+          </Box>
           <Typography variant="body2" color="text.secondary" align="center">
             מערכת זו מיועדת לשימוש מורשה בלבד
           </Typography>
@@ -93,6 +105,26 @@ const Login = ({ onLogin }) => {
           </a>
         </Typography>
       </Paper>
+
+      {/* Forgot Password Dialog */}
+      <Dialog
+        open={forgotPasswordOpen}
+        onClose={() => setForgotPasswordOpen(false)}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle fontWeight="bold">שחזור סיסמה</DialogTitle>
+        <DialogContent>
+          <DialogContentText sx={{ fontSize: '1.05rem', color: 'text.primary', mt: 1 }}>
+            נא לפנות לאחראי לקבלת סיסמה חדשה או איפוס סיסמתך במערכת.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ p: 2 }}>
+          <Button onClick={() => setForgotPasswordOpen(false)} variant="contained" autoFocus>
+            הבנתי, תודה
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };

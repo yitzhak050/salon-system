@@ -1,4 +1,4 @@
-import axios from 'axios';
+﻿import axios from 'axios';
 
 // In production, VITE_API_BASE_URL points to the real backend URL.
 // In dev (Docker), the Vite proxy rewrites /api → http://backend:8000.
@@ -34,6 +34,7 @@ export const updateShift = (shiftId, data) => api.patch(`/shifts/${shiftId}`, da
 export const customShiftSignup = (data) => api.post('/shifts/custom-signup', data);
 export const assignShift = (shiftId, userId = null, notes = null) => api.post('/shifts/assign', { shift_id: shiftId, user_id: userId, notes });
 export const unassignShift = (assignmentId) => api.delete(`/shifts/assign/${assignmentId}`);
+export const updateAssignment = (assignmentId, data) => api.patch(`/shifts/assign/${assignmentId}`, data);
 export const deleteShift = (shiftId) => api.delete(`/shifts/${shiftId}`);
 export const batchDeleteShifts = (shiftIds) => api.post('/shifts/batch-delete', { shift_ids: shiftIds });
 export const deleteWeekendShifts = (month, year) => api.post(`/shifts/delete-weekends?month=${month}&year=${year}`);

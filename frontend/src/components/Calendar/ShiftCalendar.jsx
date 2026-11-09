@@ -1,11 +1,13 @@
 import React, { useContext } from 'react';
 import { Box, Typography, Grid, Paper, Chip, Checkbox, Tooltip } from '@mui/material';
 import { shiftSlotColor, shiftSlotShortLabel } from '../../utils/dateUtils';
+import { getJewishHoliday, isMajorJewishHoliday } from '../../utils/hebrewCalendar';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import WeekendIcon from '@mui/icons-material/Weekend';
+import FestivalIcon from '@mui/icons-material/Celebration';
 import { AuthContext } from '../../App';
 
 const ShiftCalendar = ({
@@ -68,6 +70,8 @@ const ShiftCalendar = ({
           const dayDate = new Date(year, month - 1, day);
           const dayOfWeek = dayDate.getDay(); // 5 = Friday, 6 = Saturday
           const isWeekend = dayOfWeek === 5 || dayOfWeek === 6;
+          const holiday = getJewishHoliday(year, month, day);
+          const isMajorHoliday = isMajorJewishHoliday(year, month, day);
 
           const todayObj = new Date();
           const isToday = day === todayObj.getDate() &&
@@ -81,6 +85,10 @@ const ShiftCalendar = ({
           let dayBgColor = 'background.paper';
           if (isToday) {
             dayBgColor = '#fffde7'; // Soft pleasant light yellow for today
+          } else if (isMajorHoliday) {
+            dayBgColor = '#f3e5f5'; // Light purple/lavender for festive Jewish holidays
+          } else if (holiday) {
+            dayBgColor = '#e8eaf6'; // Light indigo for special Jewish dates
           } else if (isWeekend && dayShifts.length === 0) {
             dayBgColor = '#f5f5f5';
           } else if (viewMode === 'admin' && hasEmptyShift && !isWeekend) {
@@ -90,6 +98,10 @@ const ShiftCalendar = ({
           let dayBorder = '1px solid #e0e0e0';
           if (isToday) {
             dayBorder = '2.5px solid #fbc02d'; // Golden border for today
+          } else if (isMajorHoliday) {
+            dayBorder = '1.5px solid #ab47bc';
+          } else if (holiday) {
+            dayBorder = '1px solid #7986cb';
           } else if (isWeekend) {
             dayBorder = '1px dashed #bdbdbd';
           } else if (hasEmptyShift && viewMode === 'admin') {
@@ -143,6 +155,24 @@ const ShiftCalendar = ({
                           border: '1px solid #f57f17'
                         }}
                       />
+                    )}
+                    {holiday && (
+                      <Tooltip title={holiday}>
+                        <Chip
+                          label={holiday}
+                          size="small"
+                          icon={<FestivalIcon sx={{ fontSize: '11px !important' }} />}
+                          sx={{
+                            bgcolor: isMajorHoliday ? '#ba68c8' : '#9fa8da',
+                            color: '#fff',
+                            fontWeight: 'bold',
+                            height: 20,
+                            maxWidth: { xs: 80, sm: 120 },
+                            fontSize: { xs: '0.62rem', sm: '0.7rem' },
+                            '& .MuiChip-label': { overflow: 'hidden', textOverflow: 'ellipsis', px: 0.5 }
+                          }}
+                        />
+                      </Tooltip>
                     )}
                   </Box>
 

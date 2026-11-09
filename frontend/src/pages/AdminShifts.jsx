@@ -5,7 +5,7 @@ import {
   DialogTitle, DialogContent, DialogActions, List, ListItem,
   ListItemText, ListItemSecondaryAction, IconButton, Chip, Alert,
   Snackbar, Stack, Divider, Tooltip, Switch, FormControlLabel,
-  TextField, ToggleButton, ToggleButtonGroup
+  TextField, ToggleButton, ToggleButtonGroup, Slider
 } from '@mui/material';
 import ShiftCalendar from '../components/Calendar/ShiftCalendar';
 import { formatHebrewDate, shiftSlotLabel } from '../utils/dateUtils';
@@ -18,6 +18,10 @@ import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import PersonOffIcon from '@mui/icons-material/PersonOff';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import EventAvailableIcon from '@mui/icons-material/EventAvailable';
+import EditIcon from '@mui/icons-material/Edit';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import * as api from '../services/api';
 
 const AdminShifts = () => {
@@ -34,6 +38,11 @@ const AdminShifts = () => {
   const [selectedVolunteerId, setSelectedVolunteerId] = useState('');
   const [shiftCapacity, setShiftCapacity] = useState(1);
   const [shiftTitleEdit, setShiftTitleEdit] = useState('');
+
+  // Edit volunteer hours within shift
+  const [editingAssignmentId, setEditingAssignmentId] = useState(null);
+  const [editHoursRange, setEditHoursRange] = useState([10, 14]);
+  const [editHoursManual, setEditHoursManual] = useState('');
 
   // Create event/shift modal state
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -99,13 +108,68 @@ const AdminShifts = () => {
     }
   };
 
+  const formatHour = (val) => {
+    const h = Math.floor(val);
+    const m = Math.round((val - h) * 60);
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+  };
+
   // Click on a shift (single shift mode)
   const handleShiftClick = (shift) => {
     setSelectedShift(shift);
     setSelectedVolunteerId('');
     setShiftCapacity(shift.max_volunteers || 1);
     setShiftTitleEdit(shift.title || '');
+    setEditingAssignmentId(null);
     setDialogOpen(true);
+  };
+
+  const handleStartEditAssignment = (assignment, slot) => {
+    setEditingAssignmentId(assignment.id);
+    let initialStart = 10;
+    let initialEnd = 14;
+    if (slot === 'AFTERNOON') { initialStart = 14; initialEnd = 18; }
+    else if (slot === 'EVENING') { initialStart = 18; initialEnd = 22; }
+
+    if (assignment.notes && assignment.notes.includes('שעות:')) {
+      const match = assignment.notes.match(/(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})/);
+      if (match) {
+        initialStart = parseInt(match[1]) + parseInt(match[2]) / 60;
+        initialEnd = parseInt(match[3]) + parseInt(match[4]) / 60;
+      }
+    }
+    setEditHoursRange([initialStart, initialEnd]);
+    const duration = assignment.hours_logged != null ? assignment.hours_logged : (initialEnd - initialStart);
+    setEditHoursManual(String(duration));
+  };
+
+  const handleSaveAssignmentHours = async (assignmentId) => {
+    try {
+      const hoursNum = parseFloat(editHoursManual);
+      const startStr = formatHour(editHoursRange[0]);
+      const endStr = formatHour(editHoursRange[1]);
+      const hoursLogged = !isNaN(hoursNum) && hoursNum >= 0 ? hoursNum : (editHoursRange[1] - editHoursRange[0]);
+      const notes = `שעות: ${startStr}-${endStr} (עודכן ע"י מנהל)`;
+
+      await api.updateAssignment(assignmentId, {
+        hours_logged: hoursLogged,
+        notes: notes
+      });
+
+      showNotification('שעות המתנדב עודכנו בהצלחה!');
+      setEditingAssignmentId(null);
+      await fetchShiftsAndUsers();
+      // Update selectedShift in place
+      setSelectedShift(prev => {
+        if (!prev) return prev;
+        const updatedAssignments = prev.assignments?.map(a =>
+          a.id === assignmentId ? { ...a, hours_logged: hoursLogged, notes: notes } : a
+        );
+        return { ...prev, assignments: updatedAssignments };
+      });
+    } catch (e) {
+      showNotification(e.response?.data?.detail || 'שגיאה בעדכון שעות', 'error');
+    }
   };
 
   // Toggle shift selection
@@ -562,24 +626,124 @@ const AdminShifts = () => {
                 <List dense sx={{ bgcolor: 'grey.50', borderRadius: 1, my: 1 }}>
                   {selectedShift.assignments && selectedShift.assignments.length > 0 ? (
                     selectedShift.assignments.map(a => (
-                      <ListItem key={a.id}>
-                        <ListItemText
-                          primary={
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                              <span>{a.user_name || 'מתנדב רשום'}</span>
-                              {a.notes && <Chip label={a.notes} size="small" variant="outlined" />}
+                      <React.Fragment key={a.id}>
+                        <ListItem>
+                          <ListItemText
+                            primary={
+                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+                                <Typography fontWeight="bold">{a.user_name || 'מתנדב רשום'}</Typography>
+                                {a.hours_logged != null && (
+                                  <Chip label={`${a.hours_logged} שעות`} size="small" color="success" variant="outlined" />
+                                )}
+                                {a.notes && <Chip label={a.notes} size="small" variant="outlined" />}
+                              </Box>
+                            }
+                            secondary={
+                              a.clock_in ? `נכנס ב-${new Date(a.clock_in).toLocaleTimeString('he-IL')}${a.clock_out ? ` | יצא ב-${new Date(a.clock_out).toLocaleTimeString('he-IL')}` : ''}` : 'טרם ביצע כניסה'
+                            }
+                          />
+                          <ListItemSecondaryAction>
+                            <Tooltip title="ערוך שעות (סליידר או הקלדה)">
+                              <IconButton
+                                edge="end"
+                                color="primary"
+                                size="small"
+                                sx={{ mr: 1 }}
+                                onClick={() => {
+                                  if (editingAssignmentId === a.id) {
+                                    setEditingAssignmentId(null);
+                                  } else {
+                                    handleStartEditAssignment(a, selectedShift.slot);
+                                  }
+                                }}
+                              >
+                                <EditIcon fontSize="small" />
+                              </IconButton>
+                            </Tooltip>
+                            <Tooltip title="הסר מתנדב ממשמרת זו">
+                              <IconButton edge="end" color="error" size="small" onClick={() => handleUnassignSingle(a.id)}>
+                                <PersonRemoveIcon fontSize="small" />
+                              </IconButton>
+                            </Tooltip>
+                          </ListItemSecondaryAction>
+                        </ListItem>
+
+                        {/* Inline Hours Editor for Admin */}
+                        {editingAssignmentId === a.id && (
+                          <Paper sx={{ p: 2, m: 1, bgcolor: '#eef2f6', borderRadius: 2, border: '1px solid #90caf9' }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+                              <Typography variant="subtitle2" fontWeight="bold" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                <AccessTimeIcon fontSize="small" color="primary" /> עריכת שעות עבור {a.user_name || 'מתנדב'}:
+                              </Typography>
+                              <IconButton size="small" onClick={() => setEditingAssignmentId(null)}>
+                                <CloseIcon fontSize="small" />
+                              </IconButton>
                             </Box>
-                          }
-                          secondary={a.clock_in ? `נכנס ב-${new Date(a.clock_in).toLocaleTimeString('he-IL')}` : 'טרם ביצע כניסה'}
-                        />
-                        <ListItemSecondaryAction>
-                          <Tooltip title="הסר מתנדב ממשמרת זו">
-                            <IconButton edge="end" color="error" size="small" onClick={() => handleUnassignSingle(a.id)}>
-                              <PersonRemoveIcon fontSize="small" />
-                            </IconButton>
-                          </Tooltip>
-                        </ListItemSecondaryAction>
-                      </ListItem>
+
+                            {/* Slider selection */}
+                            <Typography variant="caption" color="text.secondary">
+                              בחירה בסליידר: {formatHour(editHoursRange[0])} - {formatHour(editHoursRange[1])} (סה"כ {(editHoursRange[1] - editHoursRange[0]).toFixed(1)} שעות)
+                            </Typography>
+                            <Box sx={{ px: 2, py: 1 }}>
+                              <Slider
+                                value={editHoursRange}
+                                onChange={(e, val) => {
+                                  setEditHoursRange(val);
+                                  setEditHoursManual(String(Number((val[1] - val[0]).toFixed(2))));
+                                }}
+                                min={0}
+                                max={24}
+                                step={0.5}
+                                valueLabelDisplay="auto"
+                                valueLabelFormat={formatHour}
+                                marks={[
+                                  { value: 0, label: '00:00' },
+                                  { value: 6, label: '06:00' },
+                                  { value: 10, label: '10:00' },
+                                  { value: 14, label: '14:00' },
+                                  { value: 18, label: '18:00' },
+                                  { value: 22, label: '22:00' },
+                                  { value: 24, label: '24:00' },
+                                ]}
+                              />
+                            </Box>
+
+                            {/* Manual typing input */}
+                            <Grid container spacing={2} alignItems="center" sx={{ mt: 0.5 }}>
+                              <Grid item xs={12} sm={6}>
+                                <TextField
+                                  label="או הקלד סה״כ שעות ידנית"
+                                  type="number"
+                                  size="small"
+                                  fullWidth
+                                  value={editHoursManual}
+                                  onChange={(e) => setEditHoursManual(e.target.value)}
+                                  inputProps={{ step: 0.25, min: 0, max: 24 }}
+                                  helperText="למשל: 4, 3.5 או כל כמות שעות"
+                                />
+                              </Grid>
+                              <Grid item xs={12} sm={6} sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+                                <Button
+                                  variant="outlined"
+                                  size="small"
+                                  onClick={() => setEditingAssignmentId(null)}
+                                >
+                                  ביטול
+                                </Button>
+                                <Button
+                                  variant="contained"
+                                  color="success"
+                                  size="small"
+                                  startIcon={<CheckIcon />}
+                                  onClick={() => handleSaveAssignmentHours(a.id)}
+                                >
+                                  שמור שעות
+                                </Button>
+                              </Grid>
+                            </Grid>
+                          </Paper>
+                        )}
+                      </React.Fragment>
                     ))
                   ) : (
                     <ListItem>
