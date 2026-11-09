@@ -7,6 +7,13 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { BrowserRouter } from 'react-router-dom';
 import theme, { cacheRtl } from './theme';
 
+// Register Service Worker for PWA installability ("התקנת אפליקציה")
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <CacheProvider value={cacheRtl}>

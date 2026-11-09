@@ -38,6 +38,55 @@ const formatHour = (val) => {
   return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 };
 
+const buildGoogleCalendarUrl = ({ dateStr, slot, notes, customStart, customEnd, title }) => {
+  if (!dateStr) return 'https://calendar.google.com';
+  const cleanDate = String(dateStr).split('T')[0]; // YYYY-MM-DD
+  let startHHMM = '10:00';
+  let endHHMM = '14:00';
+
+  if (customStart && customEnd) {
+    startHHMM = customStart;
+    endHHMM = customEnd;
+  } else if (notes && /(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})/.test(notes)) {
+    const m = notes.match(/(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})/);
+    startHHMM = m[1].padStart(5, '0');
+    endHHMM = m[2].padStart(5, '0');
+  } else if (slot === 'AFTERNOON') {
+    startHHMM = '14:00';
+    endHHMM = '18:00';
+  } else if (slot === 'EVENING') {
+    startHHMM = '18:00';
+    endHHMM = '22:00';
+  }
+
+  const startDateCompact = cleanDate.replace(/-/g, '');
+  let endDateCompact = startDateCompact;
+  let endTimeCompact = endHHMM.replace(':', '') + '00';
+
+  if (endHHMM === '24:00' || endHHMM === '00:00') {
+    const d = new Date(cleanDate + 'T00:00:00');
+    d.setDate(d.getDate() + 1);
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    endDateCompact = `${yyyy}${mm}${dd}`;
+    endTimeCompact = '000000';
+  }
+
+  const startTimeCompact = startHHMM.replace(':', '') + '00';
+  const slotName = title || (slot ? shiftSlotLabel(slot) : `${startHHMM}-${endHHMM}`);
+  const eventTitle = `משמרת התנדבות - סלון קהילתי (${slotName})`;
+  const eventDetails = `משמרת התנדבות בסלון הקהילתי - יוצאים לשינוי.${notes ? `\nהערות: ${notes}` : ''}`;
+
+  return (
+    `https://calendar.google.com/calendar/render?action=TEMPLATE` +
+    `&text=${encodeURIComponent(eventTitle)}` +
+    `&dates=${startDateCompact}T${startTimeCompact}/${endDateCompact}T${endTimeCompact}` +
+    `&details=${encodeURIComponent(eventDetails)}` +
+    `&ctz=Asia/Jerusalem`
+  );
+};
+
 const VolunteerPortal = () => {
   const { user } = useContext(AuthContext);
   const currentDate = new Date();
@@ -85,6 +134,12 @@ const VolunteerPortal = () => {
   const [customNotes, setCustomNotes] = useState('');
 
   const [message, setMessage] = useState({ open: false, text: '', type: 'info' });
+  const [calendarPrompt, setCalendarPrompt] = useState({
+    open: false,
+    gcalUrl: '',
+    dateLabel: '',
+    hoursLabel: '',
+  });
 
   const showNotification = (text, type = 'success') => {
     setMessage({ open: true, text, type });
@@ -180,8 +235,22 @@ const VolunteerPortal = () => {
     try {
       const notes = isPartialHours ? `שעות: ${formatHour(partialRange[0])}-${formatHour(partialRange[1])}` : null;
       await api.assignShift(selectedShift.id, null, notes);
-      showNotification('שובצת בהצלחה למשמרת!');
+      const gcalUrl = buildGoogleCalendarUrl({
+        dateStr: selectedShift.date,
+        slot: selectedShift.slot,
+        notes,
+        title: selectedShift.title,
+      });
+      const hoursLabel = isPartialHours
+        ? `${formatHour(partialRange[0])} - ${formatHour(partialRange[1])}`
+        : shiftSlotLabel(selectedShift.slot);
       setDialogOpen(false);
+      setCalendarPrompt({
+        open: true,
+        gcalUrl,
+        dateLabel: formatHebrewDate(selectedShift.date),
+        hoursLabel,
+      });
       fetchVolunteerData();
     } catch (e) {
       showNotification(e.response?.data?.detail || 'שגיאה בהרשמה למשמרת', 'error');
@@ -204,15 +273,28 @@ const VolunteerPortal = () => {
   const handleCustomSignup = async (e) => {
     e.preventDefault();
     try {
+      const startStr = formatHour(customRange[0]);
+      const endStr = formatHour(customRange[1]);
       await api.customShiftSignup({
         date: customDate,
-        start_time: formatHour(customRange[0]),
-        end_time: formatHour(customRange[1]),
+        start_time: startStr,
+        end_time: endStr,
         notes: customNotes
       });
-      showNotification('שובצת בהצלחה להתנדבות המיוחדת!');
+      const gcalUrl = buildGoogleCalendarUrl({
+        dateStr: customDate,
+        customStart: startStr,
+        customEnd: endStr,
+        notes: customNotes,
+      });
       setWeekendDialogOpen(false);
       setCustomNotes('');
+      setCalendarPrompt({
+        open: true,
+        gcalUrl,
+        dateLabel: formatHebrewDate(customDate),
+        hoursLabel: `${startStr} - ${endStr}`,
+      });
       fetchVolunteerData();
     } catch (e) {
       showNotification(e.response?.data?.detail || 'שגיאה בהרשמה', 'error');
@@ -869,7 +951,7 @@ const VolunteerPortal = () => {
                   </Tooltip>
                 )}
               </Box>
-              <Box sx={{ display: 'flex', gap: 1 }}>
+              <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap' }}>
                 <Button onClick={() => setDialogOpen(false)}>סגור</Button>
                 {!isAssignedToSelected ? (
                   <Button
@@ -880,12 +962,73 @@ const VolunteerPortal = () => {
                     {isPartialHours ? 'הירשם לשעות שנבחרו' : 'הירשם למשמרת'}
                   </Button>
                 ) : (
-                  <Chip label="משובץ/ת למשמרת זו" color="success" variant="outlined" />
+                  <>
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      size="small"
+                      startIcon={<EventAvailableIcon />}
+                      component="a"
+                      href={buildGoogleCalendarUrl({
+                        dateStr: selectedShift.date,
+                        slot: selectedShift.slot,
+                        notes: myAssignment?.notes,
+                        title: selectedShift.title,
+                      })}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      הוסף ליומן Google
+                    </Button>
+                    <Chip label="משובץ/ת למשמרת זו" color="success" variant="outlined" />
+                  </>
                 )}
               </Box>
             </DialogActions>
           </>
         )}
+      </Dialog>
+
+      {/* דיאלוג אישור שיבוץ והוספה ליומן Google */}
+      <Dialog
+        open={calendarPrompt.open}
+        onClose={() => setCalendarPrompt({ ...calendarPrompt, open: false })}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'success.dark', fontWeight: 'bold' }}>
+          <CheckCircleIcon color="success" />
+          שובצת בהצלחה למשמרת!
+        </DialogTitle>
+        <DialogContent>
+          <Typography variant="body1" sx={{ mb: 1 }}>
+            המשמרת נוספה ללוח המשמרות שלך:
+          </Typography>
+          <Paper variant="outlined" sx={{ p: 2, bgcolor: '#f1f8e9', borderRadius: 2, mb: 2 }}>
+            <Typography variant="body2"><strong>תאריך:</strong> {calendarPrompt.dateLabel}</Typography>
+            <Typography variant="body2" sx={{ mt: 0.5 }}><strong>שעות:</strong> {calendarPrompt.hoursLabel}</Typography>
+          </Paper>
+          <Typography variant="body2" color="text.secondary">
+            תרצה להוסיף תזכורת למשמרת זו ביומן Google שלך?
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ p: 2, justifyContent: 'space-between' }}>
+          <Button onClick={() => setCalendarPrompt({ ...calendarPrompt, open: false })}>
+            סגור
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<EventAvailableIcon />}
+            component="a"
+            href={calendarPrompt.gcalUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => setCalendarPrompt({ ...calendarPrompt, open: false })}
+          >
+            הוסף ליומן Google
+          </Button>
+        </DialogActions>
       </Dialog>
 
       {/* דיאלוג דוח נוכחות אישי וייצוא PDF */}

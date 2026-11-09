@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { AppBar, Toolbar, Typography, IconButton, Badge, Popover, List, ListItem, ListItemText, Box, Button } from '@mui/material';
+import { AppBar, Toolbar, Typography, IconButton, Badge, Popover, List, ListItem, ListItemText, Box, Button, Tooltip } from '@mui/material';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
+import InstallMobileIcon from '@mui/icons-material/InstallMobile';
 import { AuthContext } from '../../App';
 import * as api from '../../services/api';
 
@@ -60,6 +61,23 @@ const Navbar = () => {
   const { user, handleLogout, toggleSidebar } = useContext(AuthContext);
   const [notifications, setNotifications] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+
+  useEffect(() => {
+    const handler = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+    window.addEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
+
+  const handleInstallApp = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    setDeferredPrompt(null);
+  };
 
   const fetchNotifications = async () => {
     try {
@@ -113,7 +131,26 @@ const Navbar = () => {
         {/* שעון מרכזי */}
         <Clock />
 
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 } }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, sm: 1.5 } }}>
+          {deferredPrompt && (
+            <Tooltip title="התקן כאפליקציה במכשיר">
+              <Button
+                color="inherit"
+                size="small"
+                variant="outlined"
+                startIcon={<InstallMobileIcon />}
+                onClick={handleInstallApp}
+                sx={{
+                  borderColor: 'rgba(255,255,255,0.6)',
+                  fontSize: '0.78rem',
+                  py: 0.4,
+                  px: 1,
+                }}
+              >
+                התקן אפליקציה
+              </Button>
+            </Tooltip>
+          )}
           <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'block' } }}>
             שלום, {user?.name}
           </Typography>
