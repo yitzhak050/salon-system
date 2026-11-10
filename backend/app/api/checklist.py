@@ -25,7 +25,7 @@ class TaskComplete(BaseModel):
 
 @router.get("")
 @router.get("/")
-async def get_checklist_route(db: AsyncSession = Depends(get_db)):
+async def get_checklist_route(db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
     return await get_checklist(db)
 
 @router.post("")
@@ -46,7 +46,7 @@ async def delete_task_route(task_id: str, db: AsyncSession = Depends(get_db), re
 
 @router.post("/complete")
 async def complete_task_route(req: TaskComplete, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
-    return await complete_task(db, req.task_id, req.assignment_id, req.notes)
+    return await complete_task(db, req.task_id, req.assignment_id, req.notes, requester=current_user)
 
 @router.get("/shift/{assignment_id}")
 async def get_completions_route(assignment_id: uuid.UUID, db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):

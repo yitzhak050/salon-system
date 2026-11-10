@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import Login from './pages/Login';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminShifts from './pages/AdminShifts';
@@ -13,7 +13,7 @@ import AdminSiteCustomization from './pages/AdminSiteCustomization';
 import NoticeBoardPage from './pages/NoticeBoardPage';
 import Navbar from './components/Layout/Navbar';
 import Sidebar from './components/Layout/Sidebar';
-import { getStoredToken, saveAuthToken, clearAuthToken, getPublicSettings } from './services/api';
+import { getStoredToken, saveAuthToken, clearAuthToken, getPublicSettings, sanitizeLogoUrl } from './services/api';
 import {
   Box, Typography, Button, Paper, IconButton, Link, Dialog,
   DialogTitle, DialogContent, DialogContentText, DialogActions
@@ -27,11 +27,23 @@ export const AuthContext = createContext(null);
 const WHATSAPP_URL = 'https://wa.me/972502470908?text=' + encodeURIComponent('הגעתי מהאתר של יוצאים לשינוי');
 const LINKEDIN_URL = 'https://www.linkedin.com/in/050yitzhak';
 
+const ALLOWED_ROLES = ['SALON_MANAGER', 'SALON_OPERATOR', 'EVENT_VOLUNTEER'];
+
 function decodeUserFromToken(token) {
-  if (!token) return null;
+  if (!token || typeof token !== 'string') return null;
   try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    if (payload.exp && payload.exp * 1000 < Date.now()) {
+    const parts = token.split('.');
+    if (parts.length !== 3) {
+      clearAuthToken();
+      return null;
+    }
+    const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const payload = JSON.parse(atob(base64));
+    if (!payload.exp || payload.exp * 1000 < Date.now()) {
+      clearAuthToken();
+      return null;
+    }
+    if (!payload.sub || !ALLOWED_ROLES.includes(payload.role)) {
       clearAuthToken();
       return null;
     }
@@ -88,10 +100,21 @@ class ErrorBoundary extends React.Component {
 }
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
-  const { user } = useContext(AuthContext);
-  if (!user) return <Navigate to="/login" replace />;
-  if (allowedRoles && !allowedRoles.includes(user.role)) {
-    return <Navigate to="/" replace />;
+  const { user, setUser } = useContext(AuthContext);
+  // Always verify live token from storage on every render/navigation to block back-button after logout
+  const liveUser = decodeUserFromToken(getStoredToken());
+
+  useEffect(() => {
+    if (!liveUser && user) {
+      setUser(null);
+    }
+  }, [liveUser, user, setUser]);
+
+  if (!liveUser || !user) {
+    return <Navigate to="/login" replace />;
+  }
+  if (allowedRoles && !allowedRoles.includes(liveUser.role)) {
+    return <Navigate to={liveUser.role === 'SALON_MANAGER' ? '/admin' : '/volunteer'} replace />;
   }
   return children;
 };
@@ -106,7 +129,7 @@ const Layout = ({ children }) => {
       getPublicSettings()
         .then(res => {
           if (res.data?.logo_url) {
-            setLogoUrl(res.data.logo_url);
+            setLogoUrl(sanitizeLogoUrl(res.data.logo_url));
           } else {
             setLogoUrl('');
           }
@@ -265,36 +288,110 @@ const Layout = ({ children }) => {
 
 
 function App() {
-  // Initialize synchronously from localStorage or 30-day cookie so PWA/page refresh stays logged in
+  // Initialize synchronously from sessionStorage, or (if Remember Me for 30 days was checked) localStorage/cookie
   const [user, setUser] = useState(() => decodeUserFromToken(getStoredToken()));
   const [mobileOpen, setMobileOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const toggleSidebar = () => {
     setMobileOpen(prev => !prev);
   };
 
+  // Guard against URL injection in query string or hash, and enforce session state on history navigation
+  useEffect(() => {
+    const rawUrl = `${location.pathname}${location.search}${location.hash}`;
+    const decodedUrl = (() => {
+      try {
+        return decodeURIComponent(rawUrl);
+      } catch {
+        return rawUrl;
+      }
+    })();
+
+    // Detect XSS / Script / SQL / Path-traversal injection payloads in URL
+    const suspiciousUrlPattern = /(<script|javascript:|vbscript:|data:text\/html|onerror=|onload=|\.\.\/|%00)/i;
+    if (suspiciousUrlPattern.test(decodedUrl)) {
+      const currentLiveUser = decodeUserFromToken(getStoredToken());
+      navigate(currentLiveUser ? '/' : '/login', { replace: true });
+      return;
+    }
+
+    // Re-validate stored token on every route change (prevents back-button navigation after logout)
+    const liveUser = decodeUserFromToken(getStoredToken());
+    if (!liveUser && user) {
+      setUser(null);
+      if (location.pathname !== '/login') {
+        navigate('/login', { replace: true });
+      }
+    } else if (liveUser && !user) {
+      setUser(liveUser);
+    }
+  }, [location.pathname, location.search, location.hash, user, navigate]);
+
+  // Block Browser Back/Forward Cache (BFCache), popstate history navigation after logout, and sync across tabs
+  useEffect(() => {
+    const verifyAuthOnRestore = () => {
+      const liveUser = decodeUserFromToken(getStoredToken());
+      if (!liveUser) {
+        setUser(null);
+        if (window.location.pathname !== '/login') {
+          window.history.replaceState(null, '', '/login');
+          navigate('/login', { replace: true });
+        }
+      } else {
+        setUser(liveUser);
+      }
+    };
+
+    const handlePageShow = (event) => {
+      if (event.persisted) {
+        verifyAuthOnRestore();
+      }
+    };
+
+    window.addEventListener('pageshow', handlePageShow);
+    window.addEventListener('popstate', verifyAuthOnRestore);
+    window.addEventListener('storage', verifyAuthOnRestore);
+
+    return () => {
+      window.removeEventListener('pageshow', handlePageShow);
+      window.removeEventListener('popstate', verifyAuthOnRestore);
+      window.removeEventListener('storage', verifyAuthOnRestore);
+    };
+  }, [navigate]);
+
   const handleLogin = (token, rememberForMonth = true) => {
     saveAuthToken(token, rememberForMonth);
     const decoded = decodeUserFromToken(token);
     setUser(decoded);
-    if (decoded?.role === 'SALON_MANAGER') {
-      navigate('/admin');
-    } else {
-      navigate('/volunteer');
-    }
+    const targetPath = decoded?.role === 'SALON_MANAGER' ? '/admin' : '/volunteer';
+    navigate(targetPath, { replace: true });
   };
 
   const handleLogout = () => {
     clearAuthToken();
     setUser(null);
-    navigate('/login');
+    if (typeof navigator !== 'undefined' && navigator.serviceWorker?.controller) {
+      navigator.serviceWorker.controller.postMessage({ type: 'CLEAR_AUTH_CACHE' });
+    }
+    // Overwrite history entry so clicking Back cannot return to the previous protected screen
+    if (typeof window !== 'undefined') {
+      window.history.replaceState(null, '', '/login');
+    }
+    navigate('/login', { replace: true });
   };
 
   return (
     <AuthContext.Provider value={{ user, setUser, handleLogin, handleLogout, mobileOpen, setMobileOpen, toggleSidebar }}>
       <Routes>
-        <Route path="/login" element={<Login onLogin={handleLogin} />} />
+        <Route path="/login" element={
+          user ? (
+            <Navigate to={user.role === 'SALON_MANAGER' ? '/admin' : '/volunteer'} replace />
+          ) : (
+            <Login onLogin={handleLogin} />
+          )
+        } />
         <Route path="/" element={
           <ProtectedRoute>
             {user?.role === 'SALON_MANAGER' ? 

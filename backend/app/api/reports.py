@@ -47,11 +47,21 @@ async def volunteer_pdf_route(
     )
 
 @router.get("/admin/stats", response_model=AdminStats)
-async def admin_stats_route(month: int, year: int, db: AsyncSession = Depends(get_db), current_user: User = Depends(require_manager)):
+async def admin_stats_route(
+    month: int = Query(..., ge=1, le=12),
+    year: int = Query(..., ge=2000, le=2100),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_manager)
+):
     return await get_admin_stats(db, month, year)
 
 @router.get("/admin/pdf")
-async def admin_pdf_route(month: int, year: int, db: AsyncSession = Depends(get_db), current_user: User = Depends(require_manager)):
+async def admin_pdf_route(
+    month: int = Query(..., ge=1, le=12),
+    year: int = Query(..., ge=2000, le=2100),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_manager)
+):
     stats = await get_admin_stats(db, month, year)
     pdf_bytes = export_admin_pdf(stats)
     return Response(content=pdf_bytes, media_type="application/pdf", headers={"Content-Disposition": f"attachment; filename=admin_report_{month}_{year}.pdf"})

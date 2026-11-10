@@ -47,10 +47,27 @@ async def delete_task(db: AsyncSession, task_id: str, requester: User) -> None:
     await db.commit()
 
 
-async def complete_task(db: AsyncSession, task_id: uuid.UUID, assignment_id: uuid.UUID, notes: str) -> ClosingTaskCompletion:
+from typing import Optional
+from app.models.shift import ShiftAssignment
+
+async def complete_task(
+    db: AsyncSession,
+    task_id: uuid.UUID,
+    assignment_id: uuid.UUID,
+    notes: str,
+    requester: Optional[User] = None,
+) -> ClosingTaskCompletion:
+    if requester is not None and requester.role != RoleEnum.SALON_MANAGER:
+        res = await db.execute(select(ShiftAssignment).filter(ShiftAssignment.id == str(assignment_id)))
+        assignment = res.scalars().first()
+        if not assignment:
+            raise HTTPException(status_code=404, detail="שיבוץ לא נמצא")
+        if str(assignment.user_id) != str(requester.id):
+            raise HTTPException(status_code=403, detail="אין הרשאה לסמן משימות עבור משמרת של משתמש אחר")
+
     comp = ClosingTaskCompletion(
-        task_id=task_id,
-        shift_assignment_id=assignment_id,
+        task_id=str(task_id),
+        shift_assignment_id=str(assignment_id),
         notes=notes
     )
     db.add(comp)
@@ -59,5 +76,5 @@ async def complete_task(db: AsyncSession, task_id: uuid.UUID, assignment_id: uui
     return comp
 
 async def get_completions_for_shift(db: AsyncSession, assignment_id: uuid.UUID) -> list[ClosingTaskCompletion]:
-    res = await db.execute(select(ClosingTaskCompletion).filter(ClosingTaskCompletion.shift_assignment_id == assignment_id))
+    res = await db.execute(select(ClosingTaskCompletion).filter(ClosingTaskCompletion.shift_assignment_id == str(assignment_id)))
     return list(res.scalars().all())

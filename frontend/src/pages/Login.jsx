@@ -29,7 +29,7 @@ const Login = ({ onLogin }) => {
     api.getPublicSettings()
       .then(res => {
         if (res.data?.logo_url) {
-          setLogoUrl(res.data.logo_url);
+          setLogoUrl(api.sanitizeLogoUrl(res.data.logo_url));
         }
       })
       .catch(() => {});
@@ -40,10 +40,14 @@ const Login = ({ onLogin }) => {
     setError('');
     setLoading(true);
     try {
-      const res = await api.login(phone, password);
+      const res = await api.login(phone, password, rememberMe);
       onLogin(res.data.access_token, rememberMe);
     } catch (err) {
-      setError('פרטי התחברות שגויים');
+      if (err.response?.status === 429) {
+        setError(err.response?.data?.detail || 'נסיונות התחברות רבים מדי. נא להמתין מספר דקות.');
+      } else {
+        setError('פרטי התחברות שגויים');
+      }
     } finally {
       setLoading(false);
     }

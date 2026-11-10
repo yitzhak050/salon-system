@@ -8,6 +8,25 @@ const baseURL = import.meta.env.VITE_API_BASE_URL
 
 const THIRTY_DAYS_SECONDS = 30 * 24 * 60 * 60; // 2,592,000 seconds (30 days)
 
+function getSecureCookieFlag() {
+  if (typeof window !== 'undefined' && window.location?.protocol === 'https:') {
+    return '; Secure';
+  }
+  return '';
+}
+
+export function sanitizeLogoUrl(rawUrl) {
+  if (!rawUrl || typeof rawUrl !== 'string') return '';
+  const trimmed = rawUrl.trim();
+  if (/^data:image\/(png|jpeg|jpg|webp|gif);base64,[A-Za-z0-9+/=\s]+$/i.test(trimmed)) {
+    return trimmed.replace(/\s+/g, '');
+  }
+  if (/^https?:\/\/[^\s"'()<>\\;]+$/i.test(trimmed)) {
+    return trimmed;
+  }
+  return '';
+}
+
 export function getCookieToken() {
   if (typeof document === 'undefined') return null;
   const match = document.cookie.match(/(?:^|;\s*)salon_token=([^;]*)/);
@@ -15,31 +34,63 @@ export function getCookieToken() {
 }
 
 export function getStoredToken() {
+  if (typeof window === 'undefined') return null;
+  // 1. Active tab/session token (always checked first)
+  const sessionToken = sessionStorage.getItem('token');
+  if (sessionToken) return sessionToken;
+
+  // 2. Persistent 30-day token (only if user opted in to "remember me for 30 days")
+  const rememberPref = localStorage.getItem('salon_remember_me');
+  if (rememberPref === 'false') {
+    return null;
+  }
+
   const local = localStorage.getItem('token');
-  if (local) return local;
+  if (local) {
+    sessionStorage.setItem('token', local);
+    return local;
+  }
+
   const cookieToken = getCookieToken();
   if (cookieToken) {
     localStorage.setItem('token', cookieToken);
+    sessionStorage.setItem('token', cookieToken);
     return cookieToken;
   }
   return null;
 }
 
 export function saveAuthToken(token, rememberForMonth = true) {
-  localStorage.setItem('token', token);
-  if (typeof document !== 'undefined') {
-    if (rememberForMonth) {
-      document.cookie = `salon_token=${encodeURIComponent(token)}; max-age=${THIRTY_DAYS_SECONDS}; path=/; SameSite=Lax`;
-    } else {
-      document.cookie = `salon_token=${encodeURIComponent(token)}; path=/; SameSite=Lax`;
+  if (typeof window === 'undefined') return;
+  const secureFlag = getSecureCookieFlag();
+  sessionStorage.setItem('token', token);
+  localStorage.setItem('salon_remember_me', rememberForMonth ? 'true' : 'false');
+
+  if (rememberForMonth) {
+    localStorage.setItem('token', token);
+    if (typeof document !== 'undefined') {
+      document.cookie = `salon_token=${encodeURIComponent(token)}; max-age=${THIRTY_DAYS_SECONDS}; path=/; SameSite=Strict${secureFlag}`;
+    }
+  } else {
+    // User did NOT check "Remember me for 30 days" -> do not persist in localStorage or 30-day cookie
+    localStorage.removeItem('token');
+    if (typeof document !== 'undefined') {
+      document.cookie = `salon_token=; max-age=0; path=/; SameSite=Strict${secureFlag}`;
+      document.cookie = `salon_token=; max-age=0; path=/; SameSite=Lax${secureFlag}`;
     }
   }
 }
 
 export function clearAuthToken() {
-  localStorage.removeItem('token');
+  if (typeof window !== 'undefined') {
+    sessionStorage.removeItem('token');
+    localStorage.removeItem('token');
+    localStorage.removeItem('salon_remember_me');
+  }
   if (typeof document !== 'undefined') {
-    document.cookie = 'salon_token=; max-age=0; path=/; SameSite=Lax';
+    const secureFlag = getSecureCookieFlag();
+    document.cookie = `salon_token=; max-age=0; path=/; SameSite=Strict${secureFlag}`;
+    document.cookie = `salon_token=; max-age=0; path=/; SameSite=Lax${secureFlag}`;
   }
 }
 
@@ -57,13 +108,18 @@ api.interceptors.request.use(config => {
 
 api.interceptors.response.use(response => response, error => {
   if (error.response && error.response.status === 401) {
-    clearAuthToken();
-    window.location.href = '/login';
+    // Don't redirect if the 401 came from the login endpoint itself
+    const reqUrl = error.config?.url || '';
+    if (!reqUrl.includes('/auth/login')) {
+      clearAuthToken();
+      window.location.replace('/login');
+    }
   }
   return Promise.reject(error);
 });
 
-export const login = (phone, password) => api.post('/auth/login', { phone, password });
+export const login = (phone, password, rememberMe = true) =>
+  api.post('/auth/login', { phone, password, remember_me: Boolean(rememberMe) });
 export const getShifts = (month, year) => api.get(`/shifts?month=${month}&year=${year}`);
 export const generateShifts = (month, year) => api.post('/shifts/generate', { month, year });
 export const createShift = (data) => api.post('/shifts', data);
@@ -130,8 +186,14 @@ export const hardDeleteUser = (userId, force = false) => api.delete(`/users/${us
 export const getMyProfile = () => api.get('/users/me');
 export const updateMyProfile = (data) => api.put('/users/me/profile', data);
 export const verifyMyPassword = (oldPassword) => api.post('/users/me/verify-password', { old_password: oldPassword });
-export const changeMyPassword = (oldPassword, newPassword) =>
-  api.put('/users/me/change-password', { old_password: oldPassword, new_password: newPassword });
+export const changeMyPassword = async (oldPassword, newPassword) => {
+  const res = await api.put('/users/me/change-password', { old_password: oldPassword, new_password: newPassword });
+  if (res.data?.access_token) {
+    const remember = typeof window !== 'undefined' && localStorage.getItem('salon_remember_me') !== 'false';
+    saveAuthToken(res.data.access_token, remember);
+  }
+  return res;
+};
 export const bulkImportUsers = (file) => {
   const formData = new FormData();
   formData.append('file', file);
@@ -144,6 +206,7 @@ export const downloadUsersExcelTemplate = () =>
 
 // הגדרות אתר ולוח מודעות
 export const getPublicSettings = () => api.get('/settings/public');
+export const getSiteSettings = () => api.get('/settings');
 export const updateSettings = (settingsData) => api.put('/settings', { settings: settingsData });
 
 export default api;

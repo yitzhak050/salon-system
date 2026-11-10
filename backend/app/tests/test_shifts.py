@@ -39,7 +39,10 @@ def test_assign_volunteer(test_client, manager_token, volunteer_token):
         json={"month": month, "year": year}
     )
     
-    shifts_resp = test_client.get(f"/shifts/?month={month}&year={year}")
+    shifts_resp = test_client.get(
+        f"/shifts/?month={month}&year={year}",
+        headers={"Authorization": f"Bearer {volunteer_token}"}
+    )
     shift_id = shifts_resp.json()[0]["id"]
     
     resp = test_client.post(
@@ -57,7 +60,10 @@ def test_assign_past_shift_fails(test_client, manager_token, volunteer_token):
         json={"month": 1, "year": 2024}
     )
     
-    shifts_resp = test_client.get("/shifts/?month=1&year=2024")
+    shifts_resp = test_client.get(
+        "/shifts/?month=1&year=2024",
+        headers={"Authorization": f"Bearer {volunteer_token}"}
+    )
     if shifts_resp.json():
         shift_id = shifts_resp.json()[0]["id"]
         
@@ -72,7 +78,10 @@ def test_clock_out_before_clock_in_fails(test_client, manager_token, volunteer_t
     now = datetime.datetime.now()
     month, year = now.month, now.year + 1
     test_client.post("/shifts/generate", headers={"Authorization": f"Bearer {manager_token}"}, json={"month": month, "year": year})
-    shifts_resp = test_client.get(f"/shifts/?month={month}&year={year}")
+    shifts_resp = test_client.get(
+        f"/shifts/?month={month}&year={year}",
+        headers={"Authorization": f"Bearer {volunteer_token}"}
+    )
     shift_id = shifts_resp.json()[0]["id"]
     
     test_client.post("/shifts/assign", headers={"Authorization": f"Bearer {volunteer_token}"}, json={"shift_id": shift_id})
@@ -87,7 +96,10 @@ def test_hours_calculation(test_client, manager_token, volunteer_token):
     now = datetime.datetime.now()
     month, year = now.month, now.year + 1
     test_client.post("/shifts/generate", headers={"Authorization": f"Bearer {manager_token}"}, json={"month": month, "year": year})
-    shifts_resp = test_client.get(f"/shifts/?month={month}&year={year}")
+    shifts_resp = test_client.get(
+        f"/shifts/?month={month}&year={year}",
+        headers={"Authorization": f"Bearer {volunteer_token}"}
+    )
     shift_id = shifts_resp.json()[0]["id"]
     
     test_client.post("/shifts/assign", headers={"Authorization": f"Bearer {volunteer_token}"}, json={"shift_id": shift_id})

@@ -1,4 +1,4 @@
-﻿from fastapi import APIRouter, Depends
+﻿from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.utils.timezone import now_il
 from app.db.session import get_db
@@ -8,7 +8,7 @@ from app.schemas.shift import (
     UpdateShiftRequest, CustomSignupRequest,
     UpdateAssignmentRequest
 )
-from app.models.user import User
+from app.models.user import User, RoleEnum
 from app.dependencies import require_manager, get_current_user
 from app.services.shift_service import (
     generate_monthly_shifts, get_shifts_for_month,
@@ -57,7 +57,12 @@ async def generate_shifts_route(
 
 @router.get("", response_model=list[ShiftOut])
 @router.get("/", response_model=list[ShiftOut])
-async def get_shifts_route(month: int, year: int, db: AsyncSession = Depends(get_db)):
+async def get_shifts_route(
+    month: int = Query(..., ge=1, le=12),
+    year: int = Query(..., ge=2000, le=2100),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     return await get_shifts_for_month(db, month, year)
 
 @router.post("/assign", response_model=ShiftAssignmentOut)
@@ -66,6 +71,9 @@ async def assign_volunteer_route(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    if req.user_id and str(req.user_id) != str(current_user.id):
+        if current_user.role != RoleEnum.SALON_MANAGER:
+            raise HTTPException(status_code=403, detail="אין הרשאה לשבץ מתנדב אחר")
     target_user = req.user_id if req.user_id else current_user.id
     return await assign_volunteer_to_shift(db, req.shift_id, target_user, notes=req.notes, requester=current_user)
 
@@ -85,6 +93,9 @@ async def clock_in_route(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    if req.user_id and str(req.user_id) != str(current_user.id):
+        if current_user.role != RoleEnum.SALON_MANAGER:
+            raise HTTPException(status_code=403, detail="אין הרשאה לדווח כניסה עבור מתנדב אחר")
     target_user = req.user_id if req.user_id else current_user.id
     return await clock_in_shift(db, req.shift_id, target_user, now_il())
 
@@ -94,6 +105,9 @@ async def clock_out_route(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    if req.user_id and str(req.user_id) != str(current_user.id):
+        if current_user.role != RoleEnum.SALON_MANAGER:
+            raise HTTPException(status_code=403, detail="אין הרשאה לדווח יציאה עבור מתנדב אחר")
     target_user = req.user_id if req.user_id else current_user.id
     return await clock_out_shift(db, req.shift_id, target_user, now_il())
 
@@ -119,8 +133,8 @@ async def batch_delete_shifts_route(
 
 @router.post("/delete-weekends")
 async def delete_weekends_route(
-    month: int,
-    year: int,
+    month: int = Query(..., ge=1, le=12),
+    year: int = Query(..., ge=2000, le=2100),
     db: AsyncSession = Depends(get_db),
     requester: User = Depends(require_manager)
 ):

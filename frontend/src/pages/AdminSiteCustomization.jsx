@@ -31,7 +31,7 @@ const AdminSiteCustomization = () => {
   const fetchSettings = async () => {
     try {
       setLoading(true);
-      const res = await api.getPublicSettings();
+      const res = await api.getSiteSettings();
       if (res.data) {
         setLogoUrl(res.data.logo_url || '');
         setImportantPhones(res.data.important_phones || '');
@@ -50,8 +50,9 @@ const AdminSiteCustomization = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!file.type.startsWith('image/')) {
-      setMessage({ text: 'נא לבחור קובץ תמונה בלבד', type: 'error' });
+    const allowedMimeTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif'];
+    if (!allowedMimeTypes.includes(file.type)) {
+      setMessage({ text: 'נא לבחור קובץ תמונה תקני בלבד (PNG, JPG, WEBP או GIF)', type: 'error' });
       return;
     }
 
@@ -84,7 +85,7 @@ const AdminSiteCustomization = () => {
       setMessage({ text: 'הגדרות האתר ולוח המודעות עודכנו בהצלחה!', type: 'success' });
       window.dispatchEvent(new CustomEvent('salon-settings-changed'));
     } catch (e) {
-      setMessage({ text: 'שגיאה בשמירת הגדרות האתר', type: 'error' });
+      setMessage({ text: e.response?.data?.detail || 'שגיאה בשמירת הגדרות האתר', type: 'error' });
     } finally {
       setSaving(false);
     }

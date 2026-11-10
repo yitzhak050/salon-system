@@ -35,7 +35,10 @@ def test_checklist_crud(test_client, manager_token, volunteer_token):
     task_id = resp.json()["id"]
     assert resp.json()["title"] == "כיבוי מזגנים"
 
-    get_resp = test_client.get("/checklist")
+    get_resp = test_client.get(
+        "/checklist",
+        headers={"Authorization": f"Bearer {volunteer_token}"}
+    )
     assert get_resp.status_code == 200
     assert any(t["id"] == task_id for t in get_resp.json())
 

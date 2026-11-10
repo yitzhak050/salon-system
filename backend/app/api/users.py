@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends, status, UploadFile, File
+from fastapi import APIRouter, Depends, status, UploadFile, File, HTTPException
 from fastapi.responses import Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import get_db
+from app.api.auth import _check_rate_limit, _record_failed_attempt, _clear_failed_attempts
 from app.schemas.user import (
     UserCreate,
     UserOut,
@@ -48,7 +49,14 @@ async def verify_my_password_route(
     data: UserVerifyPassword,
     current_user: User = Depends(get_current_user),
 ):
-    verify_user_old_password(current_user, data.old_password)
+    rate_key = f"verify_pw:{current_user.id}"
+    _check_rate_limit(rate_key)
+    try:
+        await verify_user_old_password(current_user, data.old_password)
+    except HTTPException:
+        _record_failed_attempt(rate_key)
+        raise
+    _clear_failed_attempts(rate_key)
     return {"valid": True}
 
 
@@ -58,7 +66,15 @@ async def change_my_password_route(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    return await change_user_own_password(db, current_user, data.old_password, data.new_password)
+    rate_key = f"change_pw:{current_user.id}"
+    _check_rate_limit(rate_key)
+    try:
+        res = await change_user_own_password(db, current_user, data.old_password, data.new_password)
+    except HTTPException:
+        _record_failed_attempt(rate_key)
+        raise
+    _clear_failed_attempts(rate_key)
+    return res
 
 
 @router.post("/bulk-import", response_model=BulkImportResult)

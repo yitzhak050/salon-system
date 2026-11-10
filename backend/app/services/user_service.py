@@ -3,6 +3,7 @@ from sqlalchemy.future import select
 import bcrypt
 from jose import jwt
 import datetime
+import hashlib
 import io
 import csv
 import re
@@ -15,19 +16,46 @@ from app.schemas.user import UserCreate, BulkImportResult
 from app.config import settings
 from app.utils.timezone import now_il_naive
 
+MAX_PASSWORD_BYTES = 72
+MAX_UPLOAD_FILE_BYTES = 5 * 1024 * 1024  # 5 MB
+MAX_UNCOMPRESSED_ZIP_BYTES = 10 * 1024 * 1024  # 10 MB
+
 # bcrypt 5.x — direct calls (passlib not compatible with bcrypt>=5.0)
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return bcrypt.checkpw(plain_password.encode("utf-8"), hashed_password.encode("utf-8"))
+    if not plain_password or not hashed_password:
+        return False
+    pw_bytes = plain_password.encode("utf-8")
+    if len(pw_bytes) > MAX_PASSWORD_BYTES:
+        return False
+    try:
+        return bcrypt.checkpw(pw_bytes, hashed_password.encode("utf-8"))
+    except ValueError:
+        return False
 
 def get_password_hash(password: str) -> str:
-    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+    if not password:
+        raise HTTPException(status_code=400, detail="סיסמה לא יכולה להיות ריקה")
+    pw_bytes = password.encode("utf-8")
+    if len(pw_bytes) > MAX_PASSWORD_BYTES:
+        raise HTTPException(status_code=400, detail="הסיסמה ארוכה מדי (מקסימום 72 תווים)")
+    return bcrypt.hashpw(pw_bytes, bcrypt.gensalt()).decode("utf-8")
 
-def create_access_token(data: dict) -> str:
+def get_password_signature(hashed_password: str) -> str:
+    """Short cryptographic fingerprint of the current password hash to invalidate old tokens upon password change."""
+    if not hashed_password:
+        return ""
+    return hashlib.sha256(hashed_password.encode("utf-8")).hexdigest()[:16]
+
+def create_access_token(data: dict, remember_me: bool = True) -> str:
     to_encode = data.copy()
-    # Keep users logged in for 30 days (43,200 minutes) so mobile/PWA users only log in once a month
-    expire_minutes = max(int(getattr(settings, "ACCESS_TOKEN_EXPIRE_MINUTES", 43200) or 43200), 43200)
+    if remember_me:
+        # Keep users who opted in logged in for 30 days (43,200 minutes)
+        expire_minutes = 43200
+    else:
+        # Session-only login expires after 8 hours (480 minutes)
+        expire_minutes = 480
     expire = now_il_naive() + datetime.timedelta(minutes=expire_minutes)
-    to_encode.update({"exp": expire})
+    to_encode.update({"exp": expire, "remember_me": bool(remember_me)})
     return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
 async def create_user(db: AsyncSession, user_data: UserCreate, requester: User) -> User:
@@ -50,19 +78,24 @@ async def create_user(db: AsyncSession, user_data: UserCreate, requester: User) 
     await db.refresh(user)
     return user
 
-async def authenticate_user(db: AsyncSession, phone: str, password: str) -> str:
-    result = await db.execute(select(User).filter(User.phone == phone))
+async def authenticate_user(db: AsyncSession, phone: str, password: str, remember_me: bool = True) -> str:
+    clean_phone = (phone or "").strip()
+    result = await db.execute(select(User).filter(User.phone == clean_phone))
     user = result.scalars().first()
-    if not user or not verify_password(password, user.hashed_password):
+    if not user or user.deleted_at is not None or not verify_password(password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid phone or password")
     if not user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
-    return create_access_token(data={
-        "sub": str(user.id),
-        "user_id": str(user.id),
-        "role": user.role.value,
-        "name": user.name
-    })
+    return create_access_token(
+        data={
+            "sub": str(user.id),
+            "user_id": str(user.id),
+            "role": user.role.value,
+            "name": user.name,
+            "pwd_sig": get_password_signature(user.hashed_password),
+        },
+        remember_me=remember_me,
+    )
 
 
 async def list_users(db: AsyncSession) -> list:
@@ -87,6 +120,9 @@ async def deactivate_user(db: AsyncSession, user_id: str, requester: User) -> Us
 async def reset_user_password(db: AsyncSession, user_id: str, new_password: str, requester: User) -> User:
     if requester.role != RoleEnum.SALON_MANAGER:
         raise HTTPException(status_code=403, detail="Only managers can reset passwords")
+
+    if not new_password or len(new_password) < 4:
+        raise HTTPException(status_code=400, detail="הסיסמה החדשה חייבת להכיל לפחות 4 תווים")
 
     result = await db.execute(select(User).filter(User.id == user_id))
     user = result.scalars().first()
@@ -210,6 +246,16 @@ async def change_user_own_password(db: AsyncSession, current_user: User, old_pas
     current_user.hashed_password = get_password_hash(new_password)
     await db.commit()
     await db.refresh(current_user)
+    current_user.access_token = create_access_token(
+        data={
+            "sub": str(current_user.id),
+            "user_id": str(current_user.id),
+            "role": current_user.role.value,
+            "name": current_user.name,
+            "pwd_sig": get_password_signature(current_user.hashed_password),
+        },
+        remember_me=True,
+    )
     return current_user
 
 def _normalize_phone(raw_phone: str) -> str:
@@ -238,11 +284,20 @@ def _col_letter_to_index(col_ref: str) -> int:
         idx = idx * 26 + (ord(ch) - ord("A") + 1)
     return max(0, idx - 1)
 
+def _safe_parse_xml(xml_bytes: bytes) -> ET.Element:
+    if b"<!ENTITY" in xml_bytes or b"<!DOCTYPE" in xml_bytes:
+        raise ValueError("קובץ ה-XML מכיל הגדרות חיצוניות אסורות")
+    return ET.fromstring(xml_bytes)
+
 def _parse_xlsx_rows(file_bytes: bytes) -> list[list[str]]:
     with zipfile.ZipFile(io.BytesIO(file_bytes)) as z:
+        total_uncompressed = sum(info.file_size for info in z.infolist())
+        if total_uncompressed > MAX_UNCOMPRESSED_ZIP_BYTES:
+            raise ValueError("קובץ האקסל גדול מדי לאחר פריסה")
+
         shared_strings = []
         if "xl/sharedStrings.xml" in z.namelist():
-            ss_root = ET.fromstring(z.read("xl/sharedStrings.xml"))
+            ss_root = _safe_parse_xml(z.read("xl/sharedStrings.xml"))
             for si in ss_root.iter():
                 if si.tag.endswith("}si") or si.tag == "si":
                     texts = [t.text or "" for t in si.iter() if t.tag.endswith("}t") or t.tag == "t"]
@@ -255,7 +310,7 @@ def _parse_xlsx_rows(file_bytes: bytes) -> list[list[str]]:
         if not sheet_files:
             raise ValueError("לא נמצא גיליון עבודה בקובץ האקסל")
 
-        sheet_root = ET.fromstring(z.read(sheet_files[0]))
+        sheet_root = _safe_parse_xml(z.read(sheet_files[0]))
         rows = []
         for row_el in sheet_root.iter():
             if not (row_el.tag.endswith("}row") or row_el.tag == "row"):
@@ -305,6 +360,9 @@ def _parse_csv_rows(file_bytes: bytes) -> list[list[str]]:
 async def bulk_import_users(db: AsyncSession, file_bytes: bytes, filename: str, requester: User) -> BulkImportResult:
     if requester.role != RoleEnum.SALON_MANAGER:
         raise HTTPException(status_code=403, detail="רק מנהל רשאי לייבא משתמשים")
+
+    if len(file_bytes) > MAX_UPLOAD_FILE_BYTES:
+        raise HTTPException(status_code=400, detail="קובץ הייבוא גדול מדי (מקסימום 5MB)")
 
     fname_lower = (filename or "").lower()
     try:

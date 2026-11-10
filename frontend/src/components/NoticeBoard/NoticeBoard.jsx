@@ -50,7 +50,7 @@ const NoticeBoard = () => {
 
   const loadSettings = async () => {
     try {
-      const res = await api.getPublicSettings();
+      const res = await api.getSiteSettings();
       setSettings(res.data);
     } catch (e) {
       console.error('Failed to load notice board settings', e);

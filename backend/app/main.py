@@ -63,26 +63,36 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins_list,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type", "Accept", "X-Requested-With"],
 )
 
 
 app.add_middleware(AuditMiddleware)
 
 @app.middleware("http")
-async def log_requests(request: Request, call_next):
+async def security_headers_and_logging(request: Request, call_next):
     start_time = time.time()
     response = None
     try:
         response = await call_next(request)
+        # Security & encryption enforcement headers
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+        # Prevent browser history / disk caching of sensitive API data
+        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
     except Exception as e:
         logger.error(f"Request error: {request.method} {request.url.path} - {str(e)}", exc_info=True)
         raise
     finally:
         process_time = time.time() - start_time
         status_code = response.status_code if response else 500
-        # Don't log spammy endpoints if needed, but for now log everything
         logger.info(f"{request.method} {request.url.path} - Status: {status_code} - Time: {process_time:.4f}s")
     return response
 

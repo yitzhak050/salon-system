@@ -21,10 +21,12 @@ class UserOut(BaseModel):
     is_active: bool
     notifications_enabled: Optional[bool] = True
     created_at: datetime.datetime
+    access_token: Optional[str] = None
 
 class UserLogin(BaseModel):
     phone: str
     password: str
+    remember_me: bool = True
 
 class Token(BaseModel):
     access_token: str
