@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from app.db.session import engine
 from app.db.base import Base
 from app.db.audit_logger import AuditMiddleware
-from app.api import auth, users, shifts, notifications, reports, checklist
+from app.api import auth, users, shifts, notifications, reports, checklist, settings as site_settings_api
 from app.config import settings
 
 from app.db.session import engine, AsyncSessionLocal
@@ -92,6 +92,7 @@ app.include_router(shifts.router)
 app.include_router(notifications.router)
 app.include_router(reports.router)
 app.include_router(checklist.router)
+app.include_router(site_settings_api.router)
 
 @app.get("/")
 async def root():
