@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import Login from './pages/Login';
 import AdminDashboard from './pages/AdminDashboard';
@@ -9,12 +9,23 @@ import UserManagement from './pages/UserManagement';
 import VolunteerPortal from './pages/VolunteerPortal';
 import VolunteerTasks from './pages/VolunteerTasks';
 import UserProfile from './pages/UserProfile';
+import AdminSiteCustomization from './pages/AdminSiteCustomization';
+import NoticeBoardPage from './pages/NoticeBoardPage';
 import Navbar from './components/Layout/Navbar';
 import Sidebar from './components/Layout/Sidebar';
-import { getStoredToken, saveAuthToken, clearAuthToken } from './services/api';
-import { Box, Typography, Button, Paper } from '@mui/material';
+import { getStoredToken, saveAuthToken, clearAuthToken, getPublicSettings } from './services/api';
+import {
+  Box, Typography, Button, Paper, IconButton, Link, Dialog,
+  DialogTitle, DialogContent, DialogContentText, DialogActions
+} from '@mui/material';
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+import LinkedInIcon from '@mui/icons-material/LinkedIn';
+import SecurityIcon from '@mui/icons-material/Security';
 
 export const AuthContext = createContext(null);
+
+const WHATSAPP_URL = 'https://wa.me/972502470908?text=' + encodeURIComponent('הגעתי מהאתר של יוצאים לשינוי');
+const LINKEDIN_URL = 'https://www.linkedin.com/in/050yitzhak';
 
 function decodeUserFromToken(token) {
   if (!token) return null;
@@ -87,9 +98,53 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 
 const Layout = ({ children }) => {
   const { user } = useContext(AuthContext);
+  const [privacyPolicyOpen, setPrivacyPolicyOpen] = useState(false);
+  const [logoUrl, setLogoUrl] = useState('');
+
+  useEffect(() => {
+    const fetchLogo = () => {
+      getPublicSettings()
+        .then(res => {
+          if (res.data?.logo_url) {
+            setLogoUrl(res.data.logo_url);
+          } else {
+            setLogoUrl('');
+          }
+        })
+        .catch(() => {});
+    };
+
+    fetchLogo();
+    window.addEventListener('salon-settings-changed', fetchLogo);
+    return () => window.removeEventListener('salon-settings-changed', fetchLogo);
+  }, []);
+
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f8fafc', flexDirection: 'column' }}>
-      <Box sx={{ display: 'flex', flexGrow: 1 }}>
+    <Box
+      sx={{
+        display: 'flex',
+        minHeight: '100vh',
+        bgcolor: '#f8fafc',
+        flexDirection: 'column',
+        position: 'relative',
+        '&::before': logoUrl ? {
+          content: '""',
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundImage: `url("${logoUrl}")`,
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center',
+          backgroundSize: '360px',
+          opacity: 0.05,
+          pointerEvents: 'none',
+          zIndex: 0
+        } : {}
+      }}
+    >
+      <Box sx={{ display: 'flex', flexGrow: 1, position: 'relative', zIndex: 1 }}>
         {user && <Navbar />}
         <Box
           component="main"
@@ -116,26 +171,94 @@ const Layout = ({ children }) => {
             component="footer"
             className="no-print"
             sx={{
-              py: 2.5,
+              py: 2,
               mt: 'auto',
-              textAlign: 'center',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 0.5,
               borderTop: '1px solid #e2e8f0',
               bgcolor: 'transparent'
             }}
           >
-            <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.9rem' }}>
-              נבנה ליוצאים לשינוי על ידי{' '}
-              <a
-                href="mailto:Yitzchak.gross@gmail.com"
-                style={{ color: '#1976d2', textDecoration: 'none', fontWeight: 600 }}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexWrap: 'wrap', justifyContent: 'center' }}>
+              <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.9rem' }}>
+                נבנה ליוצאים לשינוי על ידי{' '}
+                <a
+                  href="mailto:Yitzchak.gross@gmail.com"
+                  style={{ color: '#1976d2', textDecoration: 'none', fontWeight: 600 }}
+                >
+                  יצחק גרוס
+                </a>
+              </Typography>
+              <IconButton
+                component="a"
+                href={WHATSAPP_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                size="small"
+                sx={{ color: '#25D366', p: 0.3 }}
+                aria-label="וואטסאפ"
               >
-                יצחק גרוס
-              </a>
-            </Typography>
+                <WhatsAppIcon sx={{ fontSize: 19 }} />
+              </IconButton>
+              <IconButton
+                component="a"
+                href={LINKEDIN_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                size="small"
+                sx={{ color: '#0A66C2', p: 0.3 }}
+                aria-label="לינקדאין"
+              >
+                <LinkedInIcon sx={{ fontSize: 19 }} />
+              </IconButton>
+            </Box>
+
+            <Link
+              component="button"
+              type="button"
+              variant="caption"
+              onClick={() => setPrivacyPolicyOpen(true)}
+              sx={{
+                color: 'text.secondary',
+                textDecoration: 'underline',
+                cursor: 'pointer',
+                fontSize: '0.72rem',
+                '&:hover': { color: 'primary.main' }
+              }}
+            >
+              הצהרת פרטיות
+            </Link>
           </Box>
         </Box>
         {user && <Sidebar />}
       </Box>
+
+      {/* Privacy Policy Dialog */}
+      <Dialog
+        open={privacyPolicyOpen}
+        onClose={() => setPrivacyPolicyOpen(false)}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1, fontWeight: 'bold' }}>
+          <SecurityIcon color="primary" fontSize="small" />
+          הצהרת פרטיות
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText sx={{ fontSize: '1rem', color: 'text.primary', mt: 1, lineHeight: 1.6 }}>
+            כל המידע שנתתם נשמר רק לצורך תפעול האתר.
+            <br /><br />
+            כל המידע שנשמר שקוף לכם, וניתן למחוק את כל הנתונים בכל עת על ידי בקשה מהאחראי.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ p: 2 }}>
+          <Button onClick={() => setPrivacyPolicyOpen(false)} variant="contained" autoFocus>
+            הבנתי, סגור
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
@@ -207,11 +330,21 @@ function App() {
             <Layout><UserManagement /></Layout>
           </ProtectedRoute>
         } />
+        <Route path="/admin/site-settings" element={
+          <ProtectedRoute allowedRoles={['SALON_MANAGER']}>
+            <Layout><AdminSiteCustomization /></Layout>
+          </ProtectedRoute>
+        } />
 
         {/* נתיבי מתנדב ומפעיל סלון */}
         <Route path="/volunteer" element={
           <ProtectedRoute allowedRoles={['EVENT_VOLUNTEER', 'SALON_OPERATOR', 'SALON_MANAGER']}>
             <Layout><VolunteerPortal /></Layout>
+          </ProtectedRoute>
+        } />
+        <Route path="/volunteer/notice-board" element={
+          <ProtectedRoute allowedRoles={['EVENT_VOLUNTEER', 'SALON_OPERATOR', 'SALON_MANAGER']}>
+            <Layout><NoticeBoardPage /></Layout>
           </ProtectedRoute>
         } />
         <Route path="/volunteer/tasks" element={
