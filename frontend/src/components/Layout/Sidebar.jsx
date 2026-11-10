@@ -6,7 +6,6 @@ import AssessmentIcon from '@mui/icons-material/Assessment';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import PeopleIcon from '@mui/icons-material/People';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import EditNoteIcon from '@mui/icons-material/EditNote';
 import { AuthContext } from '../../App';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -25,7 +24,6 @@ const Sidebar = () => {
     { text: 'דוחות', icon: <AssessmentIcon />, path: '/admin/reports' },
     { text: 'ניהול משימות', icon: <AssignmentIcon />, path: '/admin/tasks' },
     { text: 'ניהול משתמשים', icon: <PeopleIcon />, path: '/admin/users' },
-    { text: 'עריכת אתר ולוח מודעות', icon: <EditNoteIcon />, path: '/admin/site-settings' },
     { text: 'פרופיל אישי', icon: <AccountCircleIcon />, path: '/profile' },
   ];
 

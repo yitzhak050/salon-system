@@ -142,8 +142,4 @@ export const bulkImportUsers = (file) => {
 export const downloadUsersExcelTemplate = () =>
   api.get('/users/excel-template', { responseType: 'blob' });
 
-// הגדרות אתר ולוח מודעות
-export const getPublicSettings = () => api.get('/settings/public');
-export const updateSettings = (settingsData) => api.put('/settings', { settings: settingsData });
-
 export default api;

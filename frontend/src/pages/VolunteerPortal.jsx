@@ -27,7 +27,6 @@ import PeopleIcon from '@mui/icons-material/People';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import ShiftCalendar from '../components/Calendar/ShiftCalendar';
 import HoursProgress from '../components/ProgressBar/HoursProgress';
-import NoticeBoard from '../components/NoticeBoard/NoticeBoard';
 import { formatHebrewDate, shiftSlotLabel } from '../utils/dateUtils';
 import { downloadVolunteerAttendancePdf } from '../utils/pdfGenerator';
 import * as api from '../services/api';
@@ -582,9 +581,6 @@ const VolunteerPortal = () => {
           </Grid>
         </Grid>
       </Paper>
-
-      {/* לוח מודעות ומידע שימושי לסלון מעל לוח המשמרות */}
-      <NoticeBoard />
 
       <Grid container spacing={3} className="no-print">
         {/* השעות שלי שנתי ויעד שעות שנתי */}

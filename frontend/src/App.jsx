@@ -9,16 +9,10 @@ import UserManagement from './pages/UserManagement';
 import VolunteerPortal from './pages/VolunteerPortal';
 import VolunteerTasks from './pages/VolunteerTasks';
 import UserProfile from './pages/UserProfile';
-import AdminSiteCustomization from './pages/AdminSiteCustomization';
 import Navbar from './components/Layout/Navbar';
 import Sidebar from './components/Layout/Sidebar';
-import { getStoredToken, saveAuthToken, clearAuthToken, getPublicSettings } from './services/api';
-import {
-  Box, Typography, Button, Paper, IconButton, Link, Dialog,
-  DialogTitle, DialogContent, DialogContentText, DialogActions
-} from '@mui/material';
-import WhatsAppIcon from '@mui/icons-material/WhatsApp';
-import SecurityIcon from '@mui/icons-material/Security';
+import { getStoredToken, saveAuthToken, clearAuthToken } from './services/api';
+import { Box, Typography, Button, Paper } from '@mui/material';
 
 export const AuthContext = createContext(null);
 
@@ -93,53 +87,9 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 
 const Layout = ({ children }) => {
   const { user } = useContext(AuthContext);
-  const [privacyPolicyOpen, setPrivacyPolicyOpen] = useState(false);
-  const [logoUrl, setLogoUrl] = useState('');
-
-  useEffect(() => {
-    const fetchLogo = () => {
-      getPublicSettings()
-        .then(res => {
-          if (res.data?.logo_url) {
-            setLogoUrl(res.data.logo_url);
-          } else {
-            setLogoUrl('');
-          }
-        })
-        .catch(() => {});
-    };
-
-    fetchLogo();
-    window.addEventListener('salon-settings-changed', fetchLogo);
-    return () => window.removeEventListener('salon-settings-changed', fetchLogo);
-  }, []);
-
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        minHeight: '100vh',
-        bgcolor: '#f8fafc',
-        flexDirection: 'column',
-        position: 'relative',
-        '&::before': logoUrl ? {
-          content: '""',
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundImage: `url("${logoUrl}")`,
-          backgroundRepeat: 'no-repeat',
-          backgroundPosition: 'center',
-          backgroundSize: '360px',
-          opacity: 0.05,
-          pointerEvents: 'none',
-          zIndex: 0
-        } : {}
-      }}
-    >
-      <Box sx={{ display: 'flex', flexGrow: 1, position: 'relative', zIndex: 1 }}>
+    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f8fafc', flexDirection: 'column' }}>
+      <Box sx={{ display: 'flex', flexGrow: 1 }}>
         {user && <Navbar />}
         <Box
           component="main"
@@ -166,80 +116,26 @@ const Layout = ({ children }) => {
             component="footer"
             className="no-print"
             sx={{
-              py: 2,
+              py: 2.5,
               mt: 'auto',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: 0.8,
+              textAlign: 'center',
               borderTop: '1px solid #e2e8f0',
               bgcolor: 'transparent'
             }}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexWrap: 'wrap', justifyContent: 'center' }}>
-              <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.85rem' }}>
-                נבנה ליוצאים לשינוי על ידי יצחק גרוס
-              </Typography>
-              <IconButton
-                component="a"
-                href="https://wa.me/972502470908?text=%D7%94%D7%92%D7%A2%D7%AA%D7%99%20%D7%9E%D7%94%D7%90%D7%AA%D7%A8%20%D7%A9%D7%97%20%D7%99%D7%95%D7%A6%D7%90%D7%99%D7%9D%20%D7%9C%D7%A9%D7%99%D7%A0%D7%95%D7%99"
-                target="_blank"
-                rel="noopener noreferrer"
-                size="small"
-                sx={{
-                  color: '#25D366',
-                  p: 0.5,
-                  '&:hover': { bgcolor: 'rgba(37, 211, 102, 0.1)' }
-                }}
-                title="פנייה בוואטסאפ ליצחק גרוס"
+            <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.9rem' }}>
+              נבנה ליוצאים לשינוי על ידי{' '}
+              <a
+                href="mailto:Yitzchak.gross@gmail.com"
+                style={{ color: '#1976d2', textDecoration: 'none', fontWeight: 600 }}
               >
-                <WhatsAppIcon sx={{ fontSize: 20 }} />
-              </IconButton>
-            </Box>
-
-            <Link
-              component="button"
-              variant="caption"
-              onClick={() => setPrivacyPolicyOpen(true)}
-              sx={{
-                color: 'text.secondary',
-                textDecoration: 'underline',
-                cursor: 'pointer',
-                fontSize: '0.75rem',
-                '&:hover': { color: 'primary.main' }
-              }}
-            >
-              הצהרת פרטיות
-            </Link>
+                יצחק גרוס
+              </a>
+            </Typography>
           </Box>
         </Box>
         {user && <Sidebar />}
       </Box>
-
-      {/* Privacy Policy Dialog */}
-      <Dialog
-        open={privacyPolicyOpen}
-        onClose={() => setPrivacyPolicyOpen(false)}
-        maxWidth="xs"
-        fullWidth
-      >
-        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1, fontWeight: 'bold' }}>
-          <SecurityIcon color="primary" fontSize="small" />
-          הצהרת פרטיות
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText sx={{ fontSize: '1rem', color: 'text.primary', mt: 1, lineHeight: 1.6 }}>
-            כל המידע שנתתם נשמר רק לצורך תפעול האתר.
-            <br /><br />
-            כל המידע שנשמר שקוף לכם, וניתן למחוק את כל הנתונים בכל עת על ידי בקשה מהאחראי.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions sx={{ p: 2 }}>
-          <Button onClick={() => setPrivacyPolicyOpen(false)} variant="contained" autoFocus>
-            הבנתי, סגור
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   );
 };
@@ -309,11 +205,6 @@ function App() {
         <Route path="/admin/users" element={
           <ProtectedRoute allowedRoles={['SALON_MANAGER']}>
             <Layout><UserManagement /></Layout>
-          </ProtectedRoute>
-        } />
-        <Route path="/admin/site-settings" element={
-          <ProtectedRoute allowedRoles={['SALON_MANAGER']}>
-            <Layout><AdminSiteCustomization /></Layout>
           </ProtectedRoute>
         } />
 

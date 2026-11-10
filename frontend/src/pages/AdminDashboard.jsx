@@ -13,7 +13,6 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import PeopleIcon from '@mui/icons-material/People';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import NoticeBoard from '../components/NoticeBoard/NoticeBoard';
 import * as api from '../services/api';
 
 const AdminDashboard = () => {
@@ -86,9 +85,6 @@ const AdminDashboard = () => {
           </FormControl>
         </Box>
       </Box>
-
-      {/* לוח מודעות בראש הדף */}
-      <NoticeBoard />
 
       {/* Quick Navigation Cards */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
